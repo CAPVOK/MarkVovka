@@ -38,6 +38,14 @@ type SpaceStationService struct{}
 // Run запускает приложение.
 func (app *Application) Run() {
     handler := api.NewHandler(app.Config)
+    //var wg sync.WaitGroup
+
+    // Запустите симуляцию в горутине и добавьте 1 к ожидающей группе
+    // wg.Add(1)
+    // go func() {
+    //     defer wg.Done()
+    //     handler.StartSimulation()
+    // }()
     handler.StartSimulation()
     r := gin.Default()
     r.GET("/location", handler.Location)
@@ -45,4 +53,6 @@ func (app *Application) Run() {
     addr := fmt.Sprintf("%s:%d", app.Config.ServiceHost, app.Config.ServicePort)
     r.Run(addr)
     log.Println("Server down")
+    // wg.Wait()
+
 }

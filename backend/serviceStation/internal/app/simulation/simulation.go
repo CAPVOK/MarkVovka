@@ -65,9 +65,6 @@ func StartSimulation(location *ds.Location, done chan struct{}) {
 
     for {
         select {
-        case <-done:
-            // Если получен сигнал о завершении, выходим из цикла
-            return
         default:
             // В противном случае обновляем координаты и ждем 1 секунду
             station.UpdateCoordinates(speedBased, angle, height)

@@ -1,10 +1,1 @@
-{
-  "latitude": 50.123,
-  "longitude": 30.456,
-  "speed": 200,
-  "altitude": 300,
-  "planetRadius": 6371,
-  "angle": 45,
-  "planetName": "Earth",
-  "status": "active"
-}
+{"latitude":90,"longitude":-131.57184063013918,"speed":111,"altitude":0,"planetRadius":6371,"angle":60,"planetName":"Earth","status":"active"}
