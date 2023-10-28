@@ -18,7 +18,43 @@ type Station struct {
 type simulationParams struct {
 	Speed  float64
 	Angle float64
-	Height float64
+	Height  float64
+}
+
+
+
+var lastLocation *ds.Location
+
+func StartSimulation(done chan struct{}) {
+	// Инициализация последних координат из файла JSON
+	location, err := ds.ReadLocationFromFile()
+	if err != nil {
+		log.Println("Error reading location data from file:", err)
+		return
+	}
+	lastLocation = location
+
+	for {
+		select {
+		default:
+			// Обновляем координаты симуляции с использованием последних значений из файла JSON
+			station := &Station{
+				Latitude:  lastLocation.Latitude,
+				Longitude: lastLocation.Longitude,
+			}
+
+			// В противном случае обновляем координаты и ждем 1 секунду
+			params := &simulationParams{
+				Speed:  lastLocation.Speed,
+				Angle:  lastLocation.Angle,
+				Height: lastLocation.Altitude,
+			}
+
+			station.UpdateCoordinates(params.Speed, params.Angle, params.Height)
+			log.Println("sdgfsdgfsdg")
+			time.Sleep(1 * time.Second)
+		}
+	}
 }
 
 func (s *Station) UpdateCoordinates(speedBased, angle, height float64) {
@@ -35,8 +71,12 @@ func (s *Station) UpdateCoordinates(speedBased, angle, height float64) {
 	if s.Latitude < -90 {
 		s.Latitude = -90
 	} else if s.Latitude > 90 {
-		s.Latitude = 90
+		s.Latitude -= 180
 	}
+
+	// Обновляем последние координаты
+	lastLocation.Latitude = s.Latitude
+	lastLocation.Longitude = s.Longitude
 
 	// Создайте новый объект Location с обновленными координатами и запишите его в файл
 	newLocation := &ds.Location{
@@ -53,39 +93,6 @@ func (s *Station) UpdateCoordinates(speedBased, angle, height float64) {
 	// Запишите новые координаты в файл JSON
 	err := ds.WriteLocationToFile(newLocation)
 	if err != nil {
-		log.Println("dfgdfgdfg")
-		// Обработка ошибки записи в файл
+		log.Println("Error writing location data to file:", err)
 	}
-}
-
-func StartSimulation(done chan struct{}) {
-    for {
-        select {
-        default:
-            // Читаем данные из файла JSON
-            location, err := ds.ReadLocationFromFile()
-            if err != nil {
-                log.Println("Error reading location data from file:", err)
-                time.Sleep(1 * time.Second)
-                continue
-            }
-
-            // Обновляем координаты симуляции с использованием данных из файла JSON
-            station := &Station{
-                Latitude:  location.Latitude,
-                Longitude: location.Longitude,
-            }
-
-            // В противном случае обновляем координаты и ждем 1 секунду
-            params := &simulationParams{
-                Speed:  location.Speed,
-                Angle:  location.Angle,
-                Height: location.Altitude,
-            }
-
-            station.UpdateCoordinates(params.Speed, params.Angle, params.Height)
-            log.Println("sdgfsdgfsdg")
-            time.Sleep(1 * time.Second)
-        }
-    }
 }
