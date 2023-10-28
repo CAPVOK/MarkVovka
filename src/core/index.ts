@@ -8,6 +8,7 @@ import {
 import { reducer as userReducer } from "./slices/userSlice";
 import { reducer as appReducer } from "./slices/appSlice"
 import {reducer as consoleReducer } from "./slices/console"
+import {reducer as stationReducer } from "./slices/station"
 import { socketMiddleware } from "./middleware"
 
 const middlewares = [socketMiddleware, authApi.middleware]
@@ -16,6 +17,7 @@ const rootReducer = combineReducers({
   app: appReducer,
   user: userReducer,
   console: consoleReducer,
+  station: stationReducer,
   [authApi.reducerPath]: authApi.reducer,
 })
 

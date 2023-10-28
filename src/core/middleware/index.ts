@@ -1,7 +1,7 @@
 import { Middleware } from "@reduxjs/toolkit";
 import "regenerator-runtime/runtime";
 
-export const BASE_URL = "ws://localhost:8081"; // Укажите свой адрес сервера
+export const BASE_URL = "ws://localhost:8080/data";
 
 const initialization = (socket: WebSocket) => {
   socket.addEventListener("open", () => {
