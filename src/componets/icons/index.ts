@@ -9,6 +9,7 @@ import { MoonIcon } from "./MoonIcon";
 import { SatelliteIcon } from "./Satellite";
 import { TopArrowIcon } from "./TopArrowIcon"; 
 import { ControlIcon } from "./ControlIcon";
+import { FlySatelliteIcon } from "./SatelliteIcon";
 
 export {
   StarIcon,
@@ -20,6 +21,7 @@ export {
   SearchIcon,
   MoonIcon,
   SunIcon,
+  FlySatelliteIcon,
   ControlIcon,
   SatelliteIcon,
 };

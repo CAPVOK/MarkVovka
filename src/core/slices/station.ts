@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "..";
 
 export interface IStation {
@@ -13,20 +13,30 @@ export interface IStation {
 }
 
 const initialState: IStation = {
-  latitude:  50.123,
-  longitude: 30.456,
-  speed: 200,
-  altitude: 300,
-  planetRadius: 6371,
-  angle: 45,
-  planetName: "Earth",
-  status: "active"
+  latitude:  0,
+  longitude: 0,
+  speed: 0,
+  altitude: 0,
+  planetRadius: 0,
+  angle: 0,
+  planetName: "",
+  status: ""
 };
 
 const slice = createSlice({
   name: "stationSlice",
   initialState,
   reducers: {
+    updateInfo: (state, action: PayloadAction<IStation>) => {
+      state.latitude = action.payload.latitude;
+      state.longitude = action.payload.longitude;
+      state.speed = action.payload.speed;
+      state.altitude = action.payload.altitude;
+      state.planetName = action.payload.planetName;
+      state.angle = action.payload.angle;
+      state.status = action.payload.status;
+      console.log(action.payload);
+    }
     /* logInUser: (state, action: PayloadAction<string>) => {
       state.isUserLogIn = true
       state.userName = action.payload
@@ -40,7 +50,7 @@ const slice = createSlice({
 
 // eslint-disable-next-line no-empty-pattern
 export const {
-  /* logInUser, logOutUser */
+  updateInfo
 } = slice.actions;
 
 export const selectStationInfo = (state: RootState) =>
