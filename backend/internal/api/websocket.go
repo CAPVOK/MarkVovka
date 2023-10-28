@@ -16,32 +16,11 @@ var upgrader = websocket.Upgrader{
 	WriteBufferSize: 1024,
 }
 
-func (h *Handler) ConnectWebSocket(c *gin.Context){
-	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
-	if err != nil {
-		log.Println("Ошибка при установке веб-сокет соединения:", err)
-		return
-	}
-	defer conn.Close()
-
-	for {
-		messageType, p, err := conn.ReadMessage()
-		if err != nil {
-			log.Println("Ошибка при чтении сообщения из веб-сокета:", err)
-			return
-		}
-		log.Printf("Получено сообщение от клиента: %s", p)
-
-		// Отправить ответ обратно клиенту
-		err = conn.WriteMessage(messageType, p)
-		if err != nil {
-			log.Println("Ошибка при отправке сообщения в веб-сокет:", err)
-			return
-		}
-	}
-}
-
 func (h *Handler) GetStationData(c *gin.Context) {
+	upgrader.CheckOrigin = func(r *http.Request) bool {
+		return true
+	}
+
 	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
 		log.Println("Ошибка при установке веб-сокет соединения:", err)
@@ -49,7 +28,7 @@ func (h *Handler) GetStationData(c *gin.Context) {
 	}
 	defer conn.Close()
 
-	ticker := time.NewTicker(5 * time.Second) // Таймер с интервалом 5 секунд
+	ticker := time.NewTicker(1 * time.Second) // Таймер с интервалом 5 секунд
 
 	for {
 		select {
@@ -81,4 +60,3 @@ func (h *Handler) GetStationData(c *gin.Context) {
 		}
 	}
 }
-
