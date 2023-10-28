@@ -10,15 +10,21 @@ import (
 
 // Location представляет данные о местоположении станции.
 type Location struct {
-	Latitude     float64   `json:"latitude"`
-	Longitude    float64   `json:"longitude"`
-	Speed        float64       `json:"speed"`
-	Altitude     float64       `json:"altitude"`
-	PlanetRadius int       `json:"planetRadius"`
-	Angle        float64       `json:"angle"`
-	PlanetName   string    `json:"planetName"`
-	Status       string    `json:"status"`
+	Latitude                  float64 `json:"latitude"`
+	Longitude                 float64 `json:"longitude"`
+	Speed                     float64 `json:"speed"`
+	Altitude                  float64 `json:"altitude"`
+	PlanetRadius              int     `json:"planetRadius"`
+	Angle                     float64 `json:"angle"`
+	PlanetName                string  `json:"planetName"`
+	SolarPanelStatus          bool    `json:"solarPanelStatus"`
+	FuelLevel                 float64 `json:"fuelLevel"`
+	HullStatus                string  `json:"hullStatus"`
+	Temperature               float64 `json:"temperature"`
+	ScientificInstrumentsStatus string  `json:"scientificInstrumentsStatus"`
+	NavigationSystemStatus    string  `json:"navigationSystemStatus"`
 }
+
 var mu sync.Mutex
 const stationDataFile = "../station.json"
 
@@ -52,16 +58,20 @@ func WriteLocationToFile(location *Location) error {
 
 	data, err := json.Marshal(location)
 	if err != nil {
-		log.Println("sdfgsfdg")
 		return err
 	}
 
+	// Попытайтесь создать файл, если он не существует
+	file, err := os.OpenFile(stationDataFile, os.O_WRONLY|os.O_CREATE, 0644)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
 	err = ioutil.WriteFile(stationDataFile, data, 0644)
 	if err != nil {
-		log.Println("sdfgsfdg")
 		return err
 	}
 
 	return nil
 }
-

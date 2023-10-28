@@ -108,10 +108,10 @@ func (app *Application) Run() {
         mainGroup.GET("/user", handler.GetUser)
     }
 
-    /* r.GET("/ws", handler.ConnectWebSocket) */
     r.GET("/data", handler.GetStationData)
     r.POST("/update",handler.UpdateStationData)
-
+    r.PUT("/console/:command",handler.ExecuteConsoleCommand)
+    //r.PUT("/console/:command")
     addr := fmt.Sprintf("%s:%d", app.Config.ServiceHost, app.Config.ServicePort)
     r.Run(addr)
     log.Println("Server down")

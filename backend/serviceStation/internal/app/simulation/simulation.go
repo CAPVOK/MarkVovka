@@ -10,89 +10,101 @@ import (
 
 const R = 6371
 const update_time = 1
+const updateInterval = 1 * time.Second // Интервал времени для обновления координат
 
 type Station struct {
 	Latitude  float64
 	Longitude float64
 }
-type simulationParams struct {
-	Speed  float64
-	Angle float64
-	Height  float64
+type SimulationParams struct {
+	Speed  						float64
+	Angle 						float64
+	Height  					float64
+	SolarPanelStatus 			bool
+	ScientificInstrumentsStatus string
+	NavigationSystemStatus      string
 }
-
+var ParamsCh = make(chan SimulationParams) // Канал для передачи параметров симуляции
 
 
 var lastLocation *ds.Location
 
-func StartSimulation(done chan struct{}) {
-	// Инициализация последних координат из файла JSON
-	location, err := ds.ReadLocationFromFile()
-	if err != nil {
-		log.Println("Error reading location data from file:", err)
-		return
+func StartSimulation() {
+	lastLocation = &ds.Location{
+		Latitude:                  50.123,
+		Longitude:                 30.456,
+		Speed:                     200,
+		Altitude:                  300,
+		PlanetRadius:              6371,
+		Angle:                     45,
+		PlanetName:                "Earth",
+		SolarPanelStatus:          true,
+		FuelLevel:                 75.5,
+		HullStatus:                "normal",
+		Temperature:               25.5,
+		ScientificInstrumentsStatus: "active",
+		NavigationSystemStatus:    "enabled",
 	}
-	lastLocation = location
-
-	for {
-		select {
-		default:
-			// Обновляем координаты симуляции с использованием последних значений из файла JSON
-			station := &Station{
-				Latitude:  lastLocation.Latitude,
-				Longitude: lastLocation.Longitude,
+	
+	go func() {
+		for {
+			select {
+			case params := <-ParamsCh:
+				// Обновляем координаты симуляции на основе полученных параметров
+				updateCoordinates(params.Speed, params.Angle, params.Height, params.SolarPanelStatus, params.ScientificInstrumentsStatus, params.NavigationSystemStatus)
+			default:
+				// Если нет новых параметров, продолжаем обновлять координаты с последними известными параметрами
+				updateCoordinates(lastLocation.Speed, lastLocation.Angle, lastLocation.Altitude, lastLocation.SolarPanelStatus, lastLocation.ScientificInstrumentsStatus, lastLocation.NavigationSystemStatus)
 			}
 
-			// В противном случае обновляем координаты и ждем 1 секунду
-			params := &simulationParams{
-				Speed:  lastLocation.Speed,
-				Angle:  lastLocation.Angle,
-				Height: lastLocation.Altitude,
-			}
-
-			station.UpdateCoordinates(params.Speed, params.Angle, params.Height)
-			log.Println("sdgfsdgfsdg")
-			time.Sleep(1 * time.Second)
+			// Ждем заданный интервал времени перед следующим обновлением
+			time.Sleep(updateInterval)
 		}
-	}
+	}()
 }
 
-func (s *Station) UpdateCoordinates(speedBased, angle, height float64) {
-	angleRad := angle * math.Pi / 180
-	s.Latitude = s.Latitude + speedBased*math.Cos(angleRad)*update_time*360/((height+R)*2*math.Pi)
-	s.Longitude = s.Longitude + speedBased*math.Sin(angleRad)*update_time*360/((height+R)*2*math.Pi)
 
-	if s.Longitude < -180 {
-		s.Longitude += 360
-	} else if s.Longitude > 180 {
-		s.Longitude -= 360
+// updateCoordinates обновляет координаты станции на основе переданных параметров.
+func updateCoordinates(speed, angle, height float64, solar_panel_status bool,scientific_instruments_status, navigation_system_status string) {
+	// Рассчитываем новые координаты на основе переданных параметров
+	speedBased := speed
+	angleRad := angle * math.Pi / 180
+
+	// Обновляем широту и долготу на основе скорости и угла
+	newLatitude := lastLocation.Latitude + speedBased*math.Cos(angleRad)*updateInterval.Seconds()*360/((height+R)*2*math.Pi)
+	newLongitude := lastLocation.Longitude + speedBased*math.Sin(angleRad)*updateInterval.Seconds()*360/((height+R)*2*math.Pi)
+
+	// Проверяем и корректируем координаты, чтобы они оставались в пределах [-90, 90] для широты и [-180, 180] для долготы
+	if newLongitude < -180 {
+		newLongitude += 360
+	} else if newLongitude > 180 {
+		newLongitude -= 360
 	}
 
-	if s.Latitude < -90 {
-		s.Latitude = -90
-	} else if s.Latitude > 90 {
-		s.Latitude -= 180
+	if newLatitude < -90 {
+		newLatitude += -90
+	} else if newLatitude > 90 {
+		newLatitude -= 90
 	}
 
 	// Обновляем последние координаты
-	lastLocation.Latitude = s.Latitude
-	lastLocation.Longitude = s.Longitude
+	lastLocation.Latitude = newLatitude
+	lastLocation.Longitude = newLongitude
 
-	// Создайте новый объект Location с обновленными координатами и запишите его в файл
-	newLocation := &ds.Location{
-		Latitude:     s.Latitude,
-		Longitude:    s.Longitude,
-		Speed:        speedBased,  // Укажите желаемое значение для скорости
-		Altitude:     height,  // Укажите желаемое значение для высоты
-		PlanetRadius: 6371, // Укажите желаемое значение для радиуса планеты
-		Angle:        angle,   // Укажите желаемый угол
-		PlanetName:   "Earth", // Укажите желаемое имя планеты
-		Status:       "active", // Укажите желаемый статус
-	}
+	// Обновляем скорость, угол и высоту
+	lastLocation.Speed = speed
+	lastLocation.Angle = angle
+	lastLocation.Altitude = height
+	lastLocation.SolarPanelStatus = solar_panel_status
+	lastLocation.ScientificInstrumentsStatus = scientific_instruments_status
+	lastLocation.NavigationSystemStatus = navigation_system_status
 
-	// Запишите новые координаты в файл JSON
-	err := ds.WriteLocationToFile(newLocation)
+	// Записываем новые координаты в файл JSON
+	err := ds.WriteLocationToFile(lastLocation)
 	if err != nil {
 		log.Println("Error writing location data to file:", err)
 	}
 }
+
+
+
