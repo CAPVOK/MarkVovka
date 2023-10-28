@@ -1,5 +1,5 @@
 ServiceHost = "localhost"
-ServicePort = 8081
+ServicePort = 8080
 
 [Redis]
 

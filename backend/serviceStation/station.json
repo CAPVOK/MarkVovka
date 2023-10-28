@@ -1,0 +1,10 @@
+{
+  "latitude": 50.123,
+  "longitude": 30.456,
+  "speed": 200,
+  "altitude": 300,
+  "planetRadius": 6371,
+  "angle": 45,
+  "planetName": "Earth",
+  "status": "active"
+}
