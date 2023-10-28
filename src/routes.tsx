@@ -1,8 +1,7 @@
 import { RouteObject } from "react-router-dom";
 import { MainLayout } from "./componets";
-import { AuthPage, ErrorPage, MainPage, OtherPage } from "./pages";
-import { LogoIcon } from "./componets/icons";
-import { HomeIcon } from "./componets/icons/HomeIcon";
+import { AuthPage, ControlPage, ErrorPage, MainPage, } from "./pages";
+import { SatelliteIcon, ControlIcon } from "./componets/icons";
 
 export interface IAppRoute {
   label?: string;
@@ -19,17 +18,17 @@ export const routes: IAppRoute[] = [
     element: <MainLayout />,
     children: [
       {
-        label: "Главная",
+        label: "Станция",
         path: "/",
         index: true,
         element: <MainPage />,
-        icon: <HomeIcon />,
+        icon: < SatelliteIcon/>,
       },
       {
-        label: "Прочее",
-        path: "/other",
-        element: <OtherPage />,
-        icon: <LogoIcon />,
+        label: "Управленние",
+        path: "/control",
+        element: <ControlPage />,
+        icon: <ControlIcon />,
       },
     ],
   },

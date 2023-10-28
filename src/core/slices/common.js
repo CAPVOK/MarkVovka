@@ -8,12 +8,12 @@ const slice = createSlice({
   name: "clusterState",
   initialState,
   reducers: {
-    socketConnection: (state, action) => {
-      state.isSocketConnected = action.payload.state
+    setSocketConnection: (state) => {
+      state.isSocketConnected = true;
     },
   },
 })
 
-export const { socketConnection } = slice.actions
+export const { setSocketConnection } = slice.actions
 
 export const { reducer } = slice

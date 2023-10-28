@@ -6,14 +6,20 @@ import { LogoIcon } from "./LogoIcon";
 import { SearchIcon } from "./SearchIcon";
 import { SunIcon } from "./SunIcon";
 import { MoonIcon } from "./MoonIcon";
+import { SatelliteIcon } from "./Satellite";
+import { TopArrowIcon } from "./TopArrowIcon"; 
+import { ControlIcon } from "./ControlIcon";
 
 export {
   StarIcon,
   WaklIcon,
   CloseIcon,
   SignUpIcon,
+  TopArrowIcon,
   LogoIcon,
   SearchIcon,
   MoonIcon,
   SunIcon,
+  ControlIcon,
+  SatelliteIcon,
 };

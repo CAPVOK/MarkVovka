@@ -7,13 +7,15 @@ import {
 } from "react-redux";
 import { reducer as userReducer } from "./slices/userSlice";
 import { reducer as appReducer } from "./slices/appSlice"
-/* import { socketMiddleware } from "./middleware" */
+import {reducer as consoleReducer } from "./slices/console"
+import { socketMiddleware } from "./middleware"
 
-const middlewares = [/* socketMiddleware,  */authApi.middleware]
+const middlewares = [socketMiddleware, authApi.middleware]
 
 const rootReducer = combineReducers({
   app: appReducer,
   user: userReducer,
+  console: consoleReducer,
   [authApi.reducerPath]: authApi.reducer,
 })
 

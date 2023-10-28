@@ -12,9 +12,10 @@ $sidebar_block_height: 50px;
 .sidebar {
   flex-shrink: 0;
   position: relative;
-  margin: 10px;
-  background-color: var(--primary_color);
-  border-radius: $sidebar_radius;
+  /* margin: 10px; */
+  background-color: var(--secondary_color);
+  /* background-color: #f73c16; */
+  /* border-radius: $sidebar_radius; */
   overflow: hidden;
   transition: 0.3s;
 

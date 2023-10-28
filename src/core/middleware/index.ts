@@ -1,41 +1,33 @@
-export const BASE_URL =
-  "http://localhost:8081";
-/* import { Manager } from "socket.io-client"
-import { store } from ".."
-import { socketConnection } from "../slices/common"
+import { Middleware } from "@reduxjs/toolkit";
+import "regenerator-runtime/runtime";
 
-const initialization = (socket) => {
-  socket.on("connect", () => {
-    store.dispatch(socketConnection({ type: "socketConnection", state: true }))
-    console.log("Connection established :)")
-  })
-  socket.on("connect_error", () => {
-    store.dispatch(socketConnection({ type: "socketConnection", state: false }))
-    console.log("Socket disconnected!")
-  })
-}
+export const BASE_URL = "ws://localhost:8081"; // Укажите свой адрес сервера
 
+const initialization = (socket: WebSocket) => {
+  socket.addEventListener("open", () => {
+    console.log("Connection established :)");
+  });
+  socket.addEventListener("close", () => {
+    console.log("Socket disconnected!");
+  });
+  socket.addEventListener("message", (event) => {
+    const data = JSON.parse(event.data);
+    console.log("Received message:", data);
+  });
+  socket.addEventListener("error", (error) => {
+    console.error("WebSocket error:", error);
+  });
+};
 
-const manager = new Manager(BASE_URL, {
-  path: "/v3/channel_123",
-  reconnection: true,
-  reconnectionDelay: 1000,
-  reconnectionDelayMax: 5000,
-  reconnectionAttempts: Infinity,
-})
+const socket = new WebSocket(BASE_URL);
 
-const socket = manager.socket("/")
-initialization(socket)
+initialization(socket);
 
-const someRoom = manager.socket("/room1")
-
-export const socketMiddleware = () => (next) => (action) => {
-  switch (action.type) {
-    default:
-      return next(action)
-  }
-}
-
-someRoom.on("SET", (data) => {
-  console.log("SomeRoom data", data)
-}) */
+export const socketMiddleware: Middleware =
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  (store) => (next) => (action) => {
+    switch (action.type) {
+      default:
+        return next(action);
+    }
+  };

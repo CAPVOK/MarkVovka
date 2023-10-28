@@ -14,6 +14,7 @@ interface ThemeProviderProps {
 const GlobalStyle = createGlobalStyle`
 :root {
   --background_color: ${(props) => props.theme.backgroundColor};
+  __background_light_color: ${(props) => props.theme.backgroundLightColor};
   --primary_color: ${(props) => props.theme.primaryColor};
   --secondary_color: ${(props) => props.theme.secondaryColor};
   --accent_color: ${(props) => props.theme.accentColor};
@@ -22,12 +23,15 @@ const GlobalStyle = createGlobalStyle`
   --text_color: ${(props) => props.theme.textColor};
   --error_text_color: ${(props) => props.theme.errorTextColor};
   --success_text_color: ${(props) => props.theme.successTextColor};
+  --border_color: ${(props) => props.theme.borderColor};
 }
 `;
 
 interface Theme {
   backgroundColor: string;
+  backgroundLightColor: string;
   primaryColor: string;
+  borderColor: string;
   secondaryColor: string;
   accentColor: string;
   errorColor: string;
@@ -39,8 +43,10 @@ interface Theme {
 
 const lightTheme: Theme = {
   backgroundColor: "#fbfbfb",
+  backgroundLightColor: "",
   primaryColor: "#6ebaeb",
   secondaryColor: "#f49474",
+  borderColor: "",
   accentColor: "#ec4c1c",
   errorColor: "#f30f11",
   successColor: "#40ca6e",
@@ -51,9 +57,11 @@ const lightTheme: Theme = {
 
 const darkTheme: Theme = {
   backgroundColor: "#141414",
+  backgroundLightColor: "141414",
+  secondaryColor: "#363636",
+  accentColor: "#f73c16",
+  borderColor: "#f73c16",
   primaryColor: "#575c67",
-  secondaryColor: "#e85c2c",
-  accentColor: "#fb341a",
   errorColor: "#f30f11",
   successColor: "#0ab844",
   errorTextColor: "white",

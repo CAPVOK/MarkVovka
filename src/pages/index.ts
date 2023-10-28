@@ -1,6 +1,6 @@
 import { MainPage } from "./MainPage"
 import { AuthPage } from "./AuthPage"
 import { ErrorPage } from "./ErrorPage"
-import { OtherPage } from "./OtherPage"
+import { ControlPage } from "./ControlPage"
 
-export { MainPage, AuthPage, ErrorPage, OtherPage, }
+export { MainPage, AuthPage, ErrorPage, ControlPage, }

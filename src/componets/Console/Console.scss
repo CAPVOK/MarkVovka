@@ -1,0 +1,65 @@
+.console {
+  width: 100%;
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 40px;
+    background-color: var(--secondary_color);
+    padding: 5px 10px;
+    h2 {
+      font-size: 16px;
+    }
+    .manage_buttons {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .reverse {
+      transform: rotate(180deg);
+    }
+
+    .btn {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      .icon {
+        width: 30px;
+        aspect-ratio: 1;
+        transition: 0.1s;
+        &.close {
+          width: 18px;
+        }
+      }
+    }
+  }
+  .main_block {
+    height: 280px;
+    background-color: #1c1c1c;
+    overflow: scroll;
+    padding-bottom: 220px;
+    transition: 0.3s;
+    &_close {
+      height: 0;
+      transition: 0.3s;
+    }
+    .console_message {
+      margin: 5px;
+      font-size: 16px;
+    }
+    .console_input {
+      width: 100%;
+      background-color: transparent;
+      &:after {
+        content: "";
+        width: 5px;
+        height: 20px;
+        background-color: #ec7fff;
+        display: inline-block;
+      }
+    }
+  }
+}
