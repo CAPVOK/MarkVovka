@@ -1,5 +1,5 @@
 export const BASE_URL =
-  "wss://demo.piesocket.com/v3/channel_123?api_key=VCXCEuvhGcBDP7XhiJJUDvR1e1D3eiVjgZ9VRiaV&notify_self";
+  "http://localhost:8081";
 /* import { Manager } from "socket.io-client"
 import { store } from ".."
 import { socketConnection } from "../slices/common"

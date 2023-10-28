@@ -1,6 +1,18 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { BASE_URL } from "../middleware";
 
+export interface ISignUpInfo {
+  fullName: string;
+  userName: string;
+  password: string;
+  email: string;
+}
+
+export interface ILogInInfo {
+  userName: string;
+  password: string;
+}
+
 export const authApi = createApi({
   reducerPath: "userAPI",
   baseQuery: fetchBaseQuery({
@@ -10,42 +22,31 @@ export const authApi = createApi({
   }),
   tagTypes: ["Authorization"],
   endpoints: (build) => ({
-    signUp: build.mutation<unknown, null>({
+    logIn: build.mutation<unknown, ILogInInfo>({
       query: (body) => ({
-        url: "/user/register",
+        url: "/auth/login",
         method: "POST",
-        body,
+        body: {
+          username: body.userName,
+          password: body.password,
+        },
       }),
       invalidatesTags: [{ type: "Authorization" }],
     }),
-    logIn: build.mutation({
+    signUp: build.mutation<unknown, ISignUpInfo>({
       query: (body) => ({
-        url: "/user/login",
+        url: "/auth/signup",
         method: "POST",
-        body,
+        body: {
+          full_name: body.fullName,
+          email: body.email,
+          username: body.userName,
+          password: body.password,
+        },
       }),
       invalidatesTags: [{ type: "Authorization" }],
-    }),
-    confirmRegister: build.mutation({
-      query: (body) => ({
-        url: "/user/confirm-registration",
-        method: "POST",
-        body,
-      }),
-    }),
-    resendCode: build.mutation({
-      query: (body) => ({
-        url: "/user/resend-code",
-        method: "POST",
-        body,
-      }),
     }),
   }),
 });
 
-export const {
-  useSignUpMutation,
-  useLogInMutation,
-  useResendCodeMutation,
-  useConfirmRegisterMutation,
-} = authApi;
+export const { useSignUpMutation, useLogInMutation } = authApi;

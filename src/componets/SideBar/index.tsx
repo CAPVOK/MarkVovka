@@ -3,7 +3,7 @@ import React from "react";
 import { useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
 import {
-  /* addNotification, */
+  addNotification,
   isDarkThemeSelector,
   toggleTheme,
 } from "../../core/slices/appSlice";
@@ -79,7 +79,7 @@ export const SideBar: React.FC = () => {
             )}
           </div>
         </button>
-        {/*  <button
+         <button
           className="button"
           onClick={() => dispatch(addNotification({ message: "success" }))}
         >
@@ -92,7 +92,7 @@ export const SideBar: React.FC = () => {
           }
         >
           error
-        </button> */}
+        </button>
         <div className="highlight"></div>
       </div>
     </div>
