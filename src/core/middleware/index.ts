@@ -1,18 +1,22 @@
 import { Middleware } from "@reduxjs/toolkit";
 import "regenerator-runtime/runtime";
+import { store } from "..";
+import { setSocketConnection } from "../slices/common";
+import { IStation, updateInfo } from "../slices/station";
 
 export const BASE_URL = "ws://localhost:8080/data";
 
 const initialization = (socket: WebSocket) => {
   socket.addEventListener("open", () => {
     console.log("Connection established :)");
+    store.dispatch(setSocketConnection());
   });
   socket.addEventListener("close", () => {
     console.log("Socket disconnected!");
   });
   socket.addEventListener("message", (event) => {
-    const data = JSON.parse(event.data);
-    console.log("Received message:", data);
+    const data: IStation = JSON.parse(event.data);
+    store.dispatch(updateInfo(data));
   });
   socket.addEventListener("error", (error) => {
     console.error("WebSocket error:", error);
