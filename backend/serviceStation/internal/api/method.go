@@ -21,7 +21,6 @@ func (h *Handler) Location(c *gin.Context) {
 	c.JSON(http.StatusOK, data)
 }
 
-
 func (h *Handler) UpdateStationData(c *gin.Context) {
 	var requestData struct {
 		Speed    float64 `json:"speed"`
@@ -45,5 +44,12 @@ func (h *Handler) UpdateStationData(c *gin.Context) {
 		h.LocationData.Angle = requestData.Angle
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Station data updated successfully"})
+	// Сохранить обновленные данные в файл JSON
+	err := ds.WriteLocationToFile(h.LocationData)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save data to JSON file"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Station data updated and saved successfully"})
 }

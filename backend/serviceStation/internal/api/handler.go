@@ -17,7 +17,7 @@ func (h *Handler) StartSimulation() {
     done := make(chan struct{})
     defer close(done)
 
-    go simulation.StartSimulation(h.LocationData, done)
+    go simulation.StartSimulation(done)
 }
 
 func NewHandler(cfg *config.Config) *Handler {

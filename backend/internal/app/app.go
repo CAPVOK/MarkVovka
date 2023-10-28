@@ -110,6 +110,7 @@ func (app *Application) Run() {
 
     /* r.GET("/ws", handler.ConnectWebSocket) */
     r.GET("/data", handler.GetStationData)
+    r.POST("/update",handler.UpdateStationData)
 
     addr := fmt.Sprintf("%s:%d", app.Config.ServiceHost, app.Config.ServicePort)
     r.Run(addr)

@@ -15,6 +15,11 @@ type Station struct {
 	Latitude  float64
 	Longitude float64
 }
+type simulationParams struct {
+	Speed  float64
+	Angle float64
+	Height float64
+}
 
 func (s *Station) UpdateCoordinates(speedBased, angle, height float64) {
 	angleRad := angle * math.Pi / 180
@@ -53,22 +58,33 @@ func (s *Station) UpdateCoordinates(speedBased, angle, height float64) {
 	}
 }
 
-func StartSimulation(location *ds.Location, done chan struct{}) {
-    var speedBased float64 = 111
-    var angle float64 = 60
-    var height float64 = 0
-	log.Println("sdfgsfdg")
-    station := &Station{
-        Latitude:  location.Latitude,
-        Longitude: location.Longitude,
-    }
-
+func StartSimulation(done chan struct{}) {
     for {
         select {
         default:
+            // Читаем данные из файла JSON
+            location, err := ds.ReadLocationFromFile()
+            if err != nil {
+                log.Println("Error reading location data from file:", err)
+                time.Sleep(1 * time.Second)
+                continue
+            }
+
+            // Обновляем координаты симуляции с использованием данных из файла JSON
+            station := &Station{
+                Latitude:  location.Latitude,
+                Longitude: location.Longitude,
+            }
+
             // В противном случае обновляем координаты и ждем 1 секунду
-            station.UpdateCoordinates(speedBased, angle, height)
-			log.Println("sdgfsdgfsdg")
+            params := &simulationParams{
+                Speed:  location.Speed,
+                Angle:  location.Angle,
+                Height: location.Altitude,
+            }
+
+            station.UpdateCoordinates(params.Speed, params.Angle, params.Height)
+            log.Println("sdgfsdgfsdg")
             time.Sleep(1 * time.Second)
         }
     }
