@@ -23,7 +23,7 @@ func (h *Handler) ExecuteConsoleCommand(c *gin.Context) {
 	logMessage := fmt.Sprintf("[%s] Command:", time.Now().Format(time.RFC3339))
 	
 	if err := c.ShouldBindJSON(&commandMessage); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"masg": "Invalid JSON data",
+		c.JSON(http.StatusOK, gin.H{"masg": "Invalid JSON data",
 											"log": logMessage})
 		return
 	}
@@ -33,7 +33,7 @@ func (h *Handler) ExecuteConsoleCommand(c *gin.Context) {
 
 	// Проверяем, что ввод содержит только одну часть (команду)
 	if len(parts) != 1 && len(parts) != 2 {
-		c.JSON(http.StatusBadRequest, gin.H{"msg": "Invalid command format",
+		c.JSON(http.StatusOK, gin.H{"msg": "Invalid command format",
 											"log":logMessage})
 		return
 	}
@@ -46,7 +46,7 @@ func (h *Handler) ExecuteConsoleCommand(c *gin.Context) {
 
 	// Проверяем, существует ли команда
 	if !isValidCommand(command) {
-		c.JSON(http.StatusBadRequest, gin.H{"msg": "Invalid command. Type 'help' for available commands.",
+		c.JSON(http.StatusOK, gin.H{"msg": "Invalid command. Type 'help' for available commands.",
 											"log":logMessage})
 		return
 	}
@@ -89,7 +89,7 @@ func (h *Handler) ExecuteConsoleCommand(c *gin.Context) {
 	// Отправляем PUT запрос
 	response, err := http.DefaultClient.Do(req)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"msg": "Failed to send request","log":logMessage})
+		c.JSON(http.StatusOK, gin.H{"msg": "Failed to send request","log":logMessage})
 		return
 	}
 	defer response.Body.Close()
