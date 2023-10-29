@@ -36,7 +36,7 @@ func NewHandler(cfg *config.Config) *Handler {
 		PlanetRadius:                6371,
 		Angle:                       0,
 		PlanetName:                  "Земля",
-		SolarPanelStatus:            "открты",
+		SolarPanelStatus:            "открыты",
 		FuelLevel:                   75.5,
 		HullStatus:                  "нормально",
 		Temperature:                 25.5,

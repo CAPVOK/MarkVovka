@@ -55,7 +55,7 @@ func (h *Handler) ExecuteConsoleCommand(c *gin.Context) {
 	// Если команда - "help", отправляем сообщение со списком доступных команд
 	if command == "help" {
 		helpMessage := "Available commands:      " +
-			"- solar-panel-status <true/false>: Toggle solar panel status      " +
+			"- solar-panel-status <on/off>: Toggle solar panel status      " +
 			"- scientific-instruments-status <active/inactive/maintenance>: Set scientific instruments status    " +
 			"- navigation-system-status <enabled/disabled/calibrating>: Set navigation system status    " +
 			"- help: Show available commands"
