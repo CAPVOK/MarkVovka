@@ -110,7 +110,7 @@ func (app *Application) Run() {
 
     r.GET("/data", handler.GetStationData)
     r.POST("/update",handler.UpdateStationData)
-    r.PUT("/console/:command",handler.ExecuteConsoleCommand)
+    r.PUT("/console",handler.ExecuteConsoleCommand)
     //r.PUT("/console/:command")
     addr := fmt.Sprintf("%s:%d", app.Config.ServiceHost, app.Config.ServicePort)
     r.Run(addr)

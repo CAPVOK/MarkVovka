@@ -4,9 +4,13 @@ import (
 	"MarkVovka/backend/serviceStation/internal/app/config"
 	"MarkVovka/backend/serviceStation/internal/app/ds"
 	"MarkVovka/backend/serviceStation/internal/app/simulation"
+	"bytes"
+	"encoding/base64"
+	"fmt"
 	"net/http"
 	"strconv"
 
+	"github.com/fogleman/gg"
 	"github.com/gin-gonic/gin"
 )
 
@@ -52,8 +56,6 @@ func NewHandler(cfg *config.Config) *Handler {
 func (h *Handler) UpdateStationData(c *gin.Context) {
 	var requestData struct {
 		Speed    float64 `json:"speed"`
-		Altitude float64 `json:"altitude"`
-		Angle    float64 `json:"angle"`
 	}
 
 	if err := c.ShouldBindJSON(&requestData); err != nil {
@@ -65,12 +67,6 @@ func (h *Handler) UpdateStationData(c *gin.Context) {
 	if requestData.Speed != 0 {
 		h.LocationData.Speed = requestData.Speed
 	}
-	if requestData.Altitude != 0 {
-		h.LocationData.Altitude = requestData.Altitude
-	}
-	if requestData.Angle != 0 {
-		h.LocationData.Angle = requestData.Angle
-	}
 
 	// Создать копию обновленных данных
 	// Создать копию обновленных данных
@@ -78,9 +74,9 @@ func (h *Handler) UpdateStationData(c *gin.Context) {
 		Latitude:                    h.StationData.Latitude,
 		Longitude:                   h.StationData.Longitude,
 		Speed:                       requestData.Speed,
-		Altitude:                    requestData.Altitude,
+		Altitude:                    h.LocationData.Altitude,
 		PlanetRadius:                h.LocationData.PlanetRadius,
-		Angle:                       requestData.Angle,
+		Angle:                       h.LocationData.Angle,
 		PlanetName:                  h.LocationData.PlanetName,
 		SolarPanelStatus:            h.LocationData.SolarPanelStatus,  
 		FuelLevel:                   h.LocationData.FuelLevel,  
@@ -95,8 +91,6 @@ func (h *Handler) UpdateStationData(c *gin.Context) {
 	go func() {
 		simulation.ParamsCh <- simulation.SimulationParams{
 			Speed:  requestData.Speed,
-			Angle:  requestData.Angle,
-			Height: requestData.Altitude,
 		}
 	}()
 
@@ -119,8 +113,6 @@ func (h *Handler) ToggleSolarPanelsStatus(c *gin.Context) {
 	go func(activated bool) {
 		simulation.ParamsCh <- simulation.SimulationParams{
 			Speed:           h.LocationData.Speed,
-			Angle:           h.LocationData.Angle,
-			Height:          h.LocationData.Altitude,
 			SolarPanelStatus: activated,
 		}
 	}(activated)
@@ -142,8 +134,6 @@ func (h *Handler) ToggleScientificInstrumentsStatus(c *gin.Context) {
 		go func(status string) {
 			simulation.ParamsCh <- simulation.SimulationParams{
 				Speed:                    h.LocationData.Speed,
-				Angle:                    h.LocationData.Angle,
-				Height:                   h.LocationData.Altitude,
 				SolarPanelStatus:         h.LocationData.SolarPanelStatus,
 				ScientificInstrumentsStatus: status,
 			}
@@ -169,8 +159,6 @@ func (h *Handler) ToggleNavigationSystemStatus(c *gin.Context) {
 		go func(status string) {
 			simulation.ParamsCh <- simulation.SimulationParams{
 				Speed:                  h.LocationData.Speed,
-				Angle:                  h.LocationData.Angle,
-				Height:                 h.LocationData.Altitude,
 				SolarPanelStatus:       h.LocationData.SolarPanelStatus,
 				ScientificInstrumentsStatus: h.LocationData.ScientificInstrumentsStatus,
 				NavigationSystemStatus: status,
@@ -182,6 +170,49 @@ func (h *Handler) ToggleNavigationSystemStatus(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid value for navigationSystemStatus parameter"})
 	}
 }
+
+func (h *Handler) GetSectorImageByLongitude(c *gin.Context) {
+	// Определить сектор на основе долготы из LocationData
+	sectorCount := 20
+	sector := int((h.LocationData.Longitude + 180.0) / 360.0 * float64(sectorCount))
+
+	// Проверить, что сектор находится в допустимых пределах (0-19)
+	if sector < 0 || sector >= sectorCount {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid sector"})
+		return
+	}
+
+	// Создать новое изображение
+	const imageSize = 200 // Размер изображения (ширина и высота)
+	dc := gg.NewContext(imageSize, imageSize)
+
+	// Рисовать изображение сектора (просто для примера)
+	dc.SetRGB(0, float64(sector)/float64(sectorCount), 0)
+	dc.DrawRectangle(50, 50, 100, 100)
+	dc.Fill()
+
+	// Сохранить изображение в формате PNG
+	imagePath := fmt.Sprintf("/sector%d.png", sector) // Укажите путь, куда сохранить изображение
+	if err := dc.SavePNG(imagePath); err != nil {
+		return 
+	}
+
+
+	// Создать буфер для сохранения изображения
+	var buf bytes.Buffer
+	if err := dc.EncodePNG(&buf); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to encode image"})
+		return
+	}
+
+	// Кодировать изображение в Base64
+	encodedImage := base64.StdEncoding.EncodeToString(buf.Bytes())
+
+	// Отправить изображение в JSON ответе
+	c.JSON(http.StatusOK, gin.H{"image": encodedImage})
+}
+
+
 
 
 
