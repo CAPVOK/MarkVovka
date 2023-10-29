@@ -28,8 +28,8 @@ var lastLocation *ds.Location
 
 func StartSimulation() {
 	lastLocation = &ds.Location{
-		Latitude:                    50.123,
-		Longitude:                   30.456,
+		Latitude:                    0,
+		Longitude:                   0,
 		Speed:                       7.685,
 		Altitude:                    300,
 		PlanetRadius:                6371,
@@ -81,8 +81,8 @@ func updateCoordinates(speed float64, solar_panel_status,scientific_instruments_
 		angleRad := lastLocation.Angle * math.Pi / 180
 		newHeight := ((((9.81 * R * R) / (speedBased * speedBased)) - R*1000) / 1000)
 		// Обновляем широту и долготу на основе скорости и угла
-		newLatitude := lastLocation.Latitude + speedBased*math.Cos(angleRad)*updateInterval.Seconds()*360/((newHeight+R)*2*math.Pi)
-		newLongitude := lastLocation.Longitude + speedBased*math.Sin(angleRad)*updateInterval.Seconds()*360/((newHeight+R)*2*math.Pi)
+		newLatitude := lastLocation.Latitude + speedBased*math.Sin(angleRad)*updateInterval.Seconds()*360/((newHeight+R)*2*math.Pi)
+		newLongitude := lastLocation.Longitude + speedBased*math.Cos(angleRad)*updateInterval.Seconds()*360/((newHeight+R)*2*math.Pi)
 	
 		// Проверяем и корректируем координаты, чтобы они оставались в пределах [-90, 90] для широты и [-180, 180] для долготы
 		if newLongitude < -180 {
@@ -101,13 +101,19 @@ func updateCoordinates(speed float64, solar_panel_status,scientific_instruments_
 		lastLocation.Longitude = roundFloat(newLongitude, 3)
 		lastLocation.Speed = roundFloat(speedBased, 3)
 		lastLocation.Altitude = roundFloat(newHeight, 3)
-		lastLocation.SolarPanelStatus = solar_panel_status
-		lastLocation.ScientificInstrumentsStatus = scientific_instruments_status
-		lastLocation.NavigationSystemStatus = navigation_system_status
+		
+		if solar_panel_status != "" {
+			lastLocation.SolarPanelStatus = solar_panel_status
+		}
+		if scientific_instruments_status != "" {
+			lastLocation.ScientificInstrumentsStatus = scientific_instruments_status
+		}
+		if navigation_system_status != "" {
+			lastLocation.NavigationSystemStatus = navigation_system_status
+		}
 		
 		lastLocation.FuelLevel = roundFloat(lastLocation.FuelLevel, 2) // Округляем топливо до 2 знаков после запятой
 		lastLocation.Temperature = roundFloat(lastLocation.Temperature, 2) // Округляем температуру до 2 знаков после запятой
-
 
 		// Записываем новые координаты в файл JSON
 		err := ds.WriteLocationToFile(lastLocation)

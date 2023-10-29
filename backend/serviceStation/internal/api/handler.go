@@ -4,13 +4,16 @@ import (
 	"MarkVovka/backend/serviceStation/internal/app/config"
 	"MarkVovka/backend/serviceStation/internal/app/ds"
 	"MarkVovka/backend/serviceStation/internal/app/simulation"
+	"bytes"
 	"encoding/base64"
 	"fmt"
 	"io/ioutil"
+	"math"
 	"net/http"
 	"path/filepath"
 	"strconv"
 
+	"github.com/disintegration/imaging"
 	"github.com/gin-gonic/gin"
 )
 
@@ -27,7 +30,7 @@ func (h *Handler) StartSimulation() {
 func NewHandler(cfg *config.Config) *Handler {
 	locationData := &ds.Location{
 		Latitude:                    50.123,
-		Longitude:                   30.456,
+		Longitude:                   0,
 		Speed:                       7.685,
 		Altitude:                    300,
 		PlanetRadius:                6371,
@@ -162,7 +165,6 @@ func (h *Handler) ToggleScientificInstrumentsStatus(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Scientific instruments status updated successfully", "data": h.LocationData})
 }
 
-
 func (h *Handler) ToggleNavigationSystemStatus(c *gin.Context) {
 	// Парсим параметр navigationSystemStatus из запроса
 	status := c.DefaultQuery("navigationSystemStatus", "disabled")
@@ -200,7 +202,7 @@ func (h *Handler) ToggleNavigationSystemStatus(c *gin.Context) {
 func (h *Handler) GetSectorImageByLongitude(c *gin.Context) {
 	// Определить сектор на основе долготы из LocationData
 	sectorCount := 20
-	sector := int((h.LocationData.Longitude + 180.0) / 360.0 * float64(sectorCount))
+	sector := int((h.LocationData.Latitude + 180.0) / 360.0 * float64(sectorCount))
 
 	// Проверить, что сектор находится в допустимых пределах (0-19)
 	if sector < 0 || sector >= sectorCount {
@@ -222,12 +224,42 @@ func (h *Handler) GetSectorImageByLongitude(c *gin.Context) {
 		return
 	}
 
-	// Кодирование изображения в Base64
-	encodedImage := base64.StdEncoding.EncodeToString(imageData)
+	// Декодирование изображения
+	img, err := imaging.Decode(bytes.NewReader(imageData))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to decode image"})
+		return
+	}
+
+	// Определение коэффициента масштабирования на основе значения Longitude
+	scaleFactor := 1.0 + math.Abs(h.LocationData.Altitude/1000.0) // Примерный расчет коэффициента масштабирования
+
+	// Масштабирование изображения
+	scaledImg := imaging.Resize(img, int(float64(img.Bounds().Dx())*scaleFactor), int(float64(img.Bounds().Dy())*scaleFactor), imaging.Lanczos)
+
+	// Кодирование масштабированного изображения в Base64
+	var encodedImage string
+	if err := func() error {
+		buffer := new(bytes.Buffer)
+		if err := imaging.Encode(buffer, scaledImg, imaging.PNG); err != nil {
+			return err
+		}
+		encodedImage = base64.StdEncoding.EncodeToString(buffer.Bytes())
+		return nil
+	}(); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to encode image"})
+		return
+	}
 
 	// Отправить изображение в JSON ответе
-	c.JSON(http.StatusOK, gin.H{"log": encodedImage, "msg":"OKEY"})
+	c.JSON(http.StatusOK, gin.H{"log": encodedImage, "msg": "OKEY"})
 }
+
+
+
+
+
+
 
 
 
