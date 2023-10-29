@@ -46,8 +46,7 @@ func (app *Application) Run() {
     r.PUT("/solar-panel-status", handler.ToggleSolarPanelsStatus)
     r.PUT("scientific-instruments-status", handler.ToggleScientificInstrumentsStatus)
     r.PUT("navigation-system-status", handler.ToggleNavigationSystemStatus)
-
-    // Добавьте обработчик для запроса GET /sector-image
+    
     r.GET("/sector-image", handler.GetSectorImageByLongitude)
 
     addr := fmt.Sprintf("%s:%d", app.Config.ServiceHost, app.Config.ServicePort)
