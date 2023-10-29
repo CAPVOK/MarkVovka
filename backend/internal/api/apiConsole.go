@@ -1,9 +1,10 @@
 package api
 
 import (
-	"io/ioutil"
+	"fmt"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -18,9 +19,12 @@ func (h *Handler) ExecuteConsoleCommand(c *gin.Context) {
 	var commandMessage struct {
 		Message string `json:"message"`
 	}
-
+	// Логирование с текущим временем
+	logMessage := fmt.Sprintf("[%s] Command:", time.Now().Format(time.RFC3339))
+	
 	if err := c.ShouldBindJSON(&commandMessage); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON data"})
+		c.JSON(http.StatusBadRequest, gin.H{"masg": "Invalid JSON data",
+											"log": logMessage})
 		return
 	}
 
@@ -29,7 +33,8 @@ func (h *Handler) ExecuteConsoleCommand(c *gin.Context) {
 
 	// Проверяем, что ввод содержит только одну часть (команду)
 	if len(parts) != 1 && len(parts) != 2 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid command format"})
+		c.JSON(http.StatusBadRequest, gin.H{"msg": "Invalid command format",
+											"log":logMessage})
 		return
 	}
 
@@ -41,11 +46,12 @@ func (h *Handler) ExecuteConsoleCommand(c *gin.Context) {
 
 	// Проверяем, существует ли команда
 	if !isValidCommand(command) {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid command. Type 'help' for available commands."})
+		c.JSON(http.StatusBadRequest, gin.H{"msg": "Invalid command. Type 'help' for available commands.",
+											"log":logMessage})
 		return
 	}
 
-
+	
 	// Если команда - "help", отправляем сообщение со списком доступных команд
 	if command == "help" {
 		helpMessage := "Available commands:\n" +
@@ -53,7 +59,8 @@ func (h *Handler) ExecuteConsoleCommand(c *gin.Context) {
 			"- scientific-instruments-status <active/inactive/maintenance>: Set scientific instruments status\n" +
 			"- navigation-system-status <enabled/disabled/calibrating>: Set navigation system status\n" +
 			"- help: Show available commands"
-		c.JSON(http.StatusOK, gin.H{"message": helpMessage})
+		c.JSON(http.StatusOK, gin.H{"msg": helpMessage,
+									"log":logMessage})
 		return
 	}
 
@@ -71,7 +78,8 @@ func (h *Handler) ExecuteConsoleCommand(c *gin.Context) {
 	// Создаем PUT запрос
 	req, err := http.NewRequest("PUT", url, nil)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create request"})
+		c.JSON(http.StatusInternalServerError, gin.H{"msg": "Failed to create request",
+		"log":logMessage})
 		return
 	}
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded") // Устанавливаем тип контента для запроса
@@ -79,20 +87,13 @@ func (h *Handler) ExecuteConsoleCommand(c *gin.Context) {
 	// Отправляем PUT запрос
 	response, err := http.DefaultClient.Do(req)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send request"})
+		c.JSON(http.StatusInternalServerError, gin.H{"msg": "Failed to send request","log":logMessage})
 		return
 	}
 	defer response.Body.Close()
 
-	// Читаем ответ от сервера
-	responseData, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to read response"})
-		return
-	}
-
 	// Возвращаем ответ в виде JSON
-	c.JSON(http.StatusOK, gin.H{"message": "Command executed successfully", "response": string(responseData)})
+	c.JSON(http.StatusOK, gin.H{"msg": "Command executed successfully", "log":logMessage})
 }
 
 
