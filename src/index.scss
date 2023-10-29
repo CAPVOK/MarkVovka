@@ -18,6 +18,10 @@ body {
   font-family: "Montserrat";
   src: url('fonts/Montserrat-VariableFont_wght.ttf') format('truetype');
 }
+@font-face {
+  font-family: "Terminal";
+  src: url('/public/fonts/retrocomputerrusbydaymarius.ttf') format('truetype');
+}
 
 .border {
   border: 1px solid var(--border_color);

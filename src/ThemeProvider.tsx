@@ -14,7 +14,7 @@ interface ThemeProviderProps {
 const GlobalStyle = createGlobalStyle`
 :root {
   --background_color: ${(props) => props.theme.backgroundColor};
-  __background_light_color: ${(props) => props.theme.backgroundLightColor};
+  --background_light_color: ${(props) => props.theme.backgroundLightColor};
   --primary_color: ${(props) => props.theme.primaryColor};
   --secondary_color: ${(props) => props.theme.secondaryColor};
   --accent_color: ${(props) => props.theme.accentColor};
@@ -57,15 +57,18 @@ const lightTheme: Theme = {
 
 const darkTheme: Theme = {
   backgroundColor: "#141414",
-  backgroundLightColor: "141414",
-  secondaryColor: "#363636",
-  accentColor: "#f73c16",
-  borderColor: "#f73c16",
-  primaryColor: "#575c67",
+  backgroundLightColor: "#002518",
+  secondaryColor: "#1e3d32",
+
+  primaryColor: "#7DFFAF",
+  accentColor: "#FF5303",/* #FF5303 */
+  
+  borderColor: "#07593A",
+  
   errorColor: "#f30f11",
-  successColor: "#0ab844",
+  successColor: "#00F55A",
   errorTextColor: "white",
-  successTextColor: "white",
+  successTextColor: "black",
   textColor: "white",
 };
 

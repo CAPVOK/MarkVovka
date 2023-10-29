@@ -71,7 +71,7 @@ function StationInfo() {
         <div className="planet_block">
           <div
             className="planet"
-            style={{ transform: `rotate(${info.angle || 0}deg)` }}
+            style={{ transform: `rotate(${180 - info.angle || 0}deg)` }}
           >
             <div className="orbit">
               <div className="sputnic">
