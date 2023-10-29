@@ -8,7 +8,7 @@ export const RotatingPlanet: React.FC = () => {
         <div className="planet">
           <div className="ring"></div>
           <div className="cover-ring"></div>
-          <div className="spots">
+          {/* <div className="spots">
             <span></span>
             <span></span>
             <span></span>
@@ -16,9 +16,8 @@ export const RotatingPlanet: React.FC = () => {
             <span></span>
             <span></span>
             <span></span>
-          </div>
+          </div> */}
         </div>
-        <p>Подключение к станции</p>
       </div>
     </div>
   );

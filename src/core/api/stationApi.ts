@@ -34,8 +34,13 @@ export const stationApi = createApi({
         body: { message: body },
       }),
     }),
+    getPhoto: build.query<unknown, void>({
+      query: () => ({
+        url: "/sector-image",
+      }),
+    }),
   }),
 });
 
-export const { useUpdateStationDataMutation, useSendConsoleCommandMutation } =
+export const { useUpdateStationDataMutation, useSendConsoleCommandMutation, useGetPhotoQuery } =
   stationApi;

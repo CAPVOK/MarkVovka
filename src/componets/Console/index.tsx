@@ -8,12 +8,9 @@ import {
   updateMessages,
 } from "../../core/slices/console";
 
-import { CloseIcon, TopArrowIcon } from "../icons";
+import { TopArrowIcon } from "../icons";
 import { useTheme } from "../../ThemeProvider";
-import {
-  IConsoleResponse,
-  useSendConsoleCommandMutation,
-} from "../../core/api/stationApi";
+import { IConsoleResponse } from "../../core/api/stationApi";
 
 export const Console: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -25,8 +22,6 @@ export const Console: React.FC = () => {
 
   const dispatch = useDispatch();
   const messages = useSelector(selectConsoleMessages);
-
-  const [sendCommand] = useSendConsoleCommandMutation();
 
   const sendConsoleCommand = async (message: string) => {
     try {
