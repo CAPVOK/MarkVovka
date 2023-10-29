@@ -26,19 +26,19 @@ func (h *Handler) StartSimulation() {
 }
 func NewHandler(cfg *config.Config) *Handler {
 	locationData := &ds.Location{
-		Latitude:                  50.123,
-		Longitude:                 30.456,
-		Speed:                     200,
-		Altitude:                  300,
-		PlanetRadius:              6371,
-		Angle:                     45,
-		PlanetName:                "Earth",
-		SolarPanelStatus:          true,
-		FuelLevel:                 75.5,
-		HullStatus:                "normal",
-		Temperature:               25.5,
-		ScientificInstrumentsStatus: "active",
-		NavigationSystemStatus:     "enabled",
+		Latitude:                    50.123,
+		Longitude:                   30.456,
+		Speed:                       7.685,
+		Altitude:                    300,
+		PlanetRadius:                6371,
+		Angle:                       0,
+		PlanetName:                  "Земля",
+		SolarPanelStatus:            "true",
+		FuelLevel:                   75.5,
+		HullStatus:                  "нормально",
+		Temperature:                 25.5,
+		ScientificInstrumentsStatus: "активен",
+		NavigationSystemStatus:      "включена",
 	}
 
     stationData := &simulation.Station{
@@ -99,76 +99,102 @@ func (h *Handler) UpdateSpeedStation(c *gin.Context) {
 
 
 func (h *Handler) ToggleSolarPanelsStatus(c *gin.Context) {
-	// Парсим параметр activated из запроса
-	activated, err := strconv.ParseBool(c.DefaultQuery("solarPanelStatus", "false"))
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"msg": "Invalid value for activated parameter"})
+	// Парсим параметр solarPanelStatus из запроса
+	status := c.DefaultQuery("solarPanelStatus", "off")
+	var solarPanelStatus string
+
+	// Проверяем допустимые значения
+	switch status {
+	case "on":
+		solarPanelStatus = "открыто"
+	case "off":
+		solarPanelStatus = "закрыто"
+	default:
+		c.JSON(http.StatusOK, gin.H{"message": "Invalid value for solarPanelStatus parameter"})
 		return
 	}
 
 	// Обновить статус солнечных панелей в locationData
-	h.LocationData.SolarPanelStatus = activated
+	h.LocationData.SolarPanelStatus = solarPanelStatus
 
 	// Отправить статус солнечных панелей в функцию симуляции
-	go func(activated bool) {
+	go func(status string) {
 		simulation.ParamsCh <- simulation.SimulationParams{
 			Speed:           h.LocationData.Speed,
-			SolarPanelStatus: activated,
+			SolarPanelStatus: status,
 		}
-	}(activated)
+	}(solarPanelStatus)
 
-	c.JSON(http.StatusOK, gin.H{"msg": "Solar panels status updated successfully", "log": h.LocationData})
+	c.JSON(http.StatusOK, gin.H{"message": "Solar panels status updated successfully", "data": h.LocationData})
 }
+
 
 func (h *Handler) ToggleScientificInstrumentsStatus(c *gin.Context) {
 	// Парсим параметр scientificInstrumentsStatus из запроса
-	status := c.DefaultQuery("scientificInstrumentsStatus", "inactive")
+	status := c.DefaultQuery("scientificInstrumentsStatus", "off")
+	var instrumentsStatus string
 
 	// Проверяем допустимые значения
 	switch status {
-	case "active", "inactive", "maintenance":
-		// Обновить статус научных инструментов в locationData
-		h.LocationData.ScientificInstrumentsStatus = status
-
-		// Отправить статус научных инструментов в функцию симуляции
-		go func(status string) {
-			simulation.ParamsCh <- simulation.SimulationParams{
-				Speed:                    h.LocationData.Speed,
-				SolarPanelStatus:         h.LocationData.SolarPanelStatus,
-				ScientificInstrumentsStatus: status,
-			}
-		}(status)
-
-		c.JSON(http.StatusOK, gin.H{"msg": "Scientific instruments status updated successfully", "log": h.LocationData})
+	case "active":
+		instrumentsStatus = "активен"
+	case "inactive":
+		instrumentsStatus = "не активный"
+	case "maintenance":
+		instrumentsStatus = "требуют обслуживания"
 	default:
-		c.JSON(http.StatusBadRequest, gin.H{"msg": "Invalid value for scientificInstrumentsStatus parameter"})
+		c.JSON(http.StatusOK, gin.H{"message": "Invalid value for scientificInstrumentsStatus parameter"})
+		return
 	}
+
+	// Обновить статус научных инструментов в locationData
+	h.LocationData.ScientificInstrumentsStatus = instrumentsStatus
+
+	// Отправить статус научных инструментов в функцию симуляции
+	go func(status string) {
+		simulation.ParamsCh <- simulation.SimulationParams{
+			Speed:                      h.LocationData.Speed,
+			SolarPanelStatus:           h.LocationData.SolarPanelStatus,
+			ScientificInstrumentsStatus: status,
+		}
+	}(instrumentsStatus)
+
+	c.JSON(http.StatusOK, gin.H{"message": "Scientific instruments status updated successfully", "data": h.LocationData})
 }
+
 
 func (h *Handler) ToggleNavigationSystemStatus(c *gin.Context) {
 	// Парсим параметр navigationSystemStatus из запроса
 	status := c.DefaultQuery("navigationSystemStatus", "disabled")
 
 	// Проверяем допустимые значения
+	var systemStatus string
 	switch status {
-	case "enabled", "disabled", "calibrating":
-		// Обновить статус системы навигации в locationData
-		h.LocationData.NavigationSystemStatus = status
-
-		// Отправить статус системы навигации в функцию симуляции
-		go func(status string) {
-			simulation.ParamsCh <- simulation.SimulationParams{
-				Speed:                  h.LocationData.Speed,
-				SolarPanelStatus:       h.LocationData.SolarPanelStatus,
-				ScientificInstrumentsStatus: h.LocationData.ScientificInstrumentsStatus,
-				NavigationSystemStatus: status,
-			}
-		}(status)
-
-		c.JSON(http.StatusOK, gin.H{"message": "Navigation system status updated successfully", "data": h.LocationData})
+	case "enabled":
+		systemStatus = "включена"
+	case "disabled":
+		systemStatus = "выключена"
+	case "calibrating":
+		systemStatus = "калибруется"
 	default:
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid value for navigationSystemStatus parameter"})
+		c.JSON(http.StatusOK, gin.H{"message": "Invalid value for navigationSystemStatus parameter"})
+		return
 	}
+
+	// Обновить статус системы навигации в locationData
+	h.LocationData.NavigationSystemStatus = systemStatus
+
+	// Отправить статус системы навигации в функцию симуляции
+	go func(status string) {
+		simulation.ParamsCh <- simulation.SimulationParams{
+			Speed:                      h.LocationData.Speed,
+			SolarPanelStatus:           h.LocationData.SolarPanelStatus,
+			ScientificInstrumentsStatus: h.LocationData.ScientificInstrumentsStatus,
+			NavigationSystemStatus:     status,
+		}
+	}(systemStatus)
+
+	c.JSON(http.StatusOK, gin.H{"message": "Navigation system status updated successfully", "data": h.LocationData})
 }
 
 func (h *Handler) GetSectorImageByLongitude(c *gin.Context) {

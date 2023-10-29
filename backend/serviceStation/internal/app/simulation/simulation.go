@@ -9,23 +9,21 @@ import (
 )
 
 const R = 6371
-const update_time = 1
-const updateInterval = 1 * time.Second // Интервал времени для обновления координат
+const updateInterval = 1 * time.Second
 
 type Station struct {
 	Latitude  float64
 	Longitude float64
 }
 type SimulationParams struct {
-	Speed  						float64
-	Height  					float64
-	SolarPanelStatus 			bool
+	Speed                     float64
+	Height                    float64
+	SolarPanelStatus          string
 	ScientificInstrumentsStatus string
 	NavigationSystemStatus      string
 }
-var ParamsCh = make(chan SimulationParams) // Канал для передачи параметров симуляции
 
-
+var ParamsCh = make(chan SimulationParams)
 var lastLocation *ds.Location
 
 func StartSimulation() {
@@ -36,35 +34,37 @@ func StartSimulation() {
 		Altitude:                    300,
 		PlanetRadius:                6371,
 		Angle:                       0,
-		PlanetName:                  "Earth",
-		SolarPanelStatus:            true,
+		PlanetName:                  "Земля",
+		SolarPanelStatus:            "открыт",
 		FuelLevel:                   75.5,
-		HullStatus:                  "normal",
+		HullStatus:                  "нормально",
 		Temperature:                 25.5,
-		ScientificInstrumentsStatus: "active",
-		NavigationSystemStatus:      "enabled",
+		ScientificInstrumentsStatus: "активен",
+		NavigationSystemStatus:      "включена",
 	}
-	
+
 	go func() {
 		for {
 			select {
 			case params := <-ParamsCh:
-				// Обновляем координаты симуляции на основе полученных параметров
 				updateCoordinates(params.Speed, params.SolarPanelStatus, params.ScientificInstrumentsStatus, params.NavigationSystemStatus)
 			default:
-				// Если нет новых параметров, продолжаем обновлять координаты с последними известными параметрами
-				updateCoordinates(lastLocation.Speed, lastLocation.SolarPanelStatus,lastLocation.ScientificInstrumentsStatus, lastLocation.NavigationSystemStatus)
+				updateCoordinates(lastLocation.Speed, lastLocation.SolarPanelStatus, lastLocation.ScientificInstrumentsStatus, lastLocation.NavigationSystemStatus)
 			}
 
-			// Ждем заданный интервал времени перед следующим обновлением
-			//time.Sleep(updateInterval)
+			time.Sleep(updateInterval)
 		}
 	}()
 }
 
+func roundFloat(num float64, decimals int) float64 {
+	pow := math.Pow(10, float64(decimals))
+	return math.Round(num*pow) / pow
+}
+
 
 // updateCoordinates обновляет координаты станции на основе переданных параметров.
-func updateCoordinates(speed float64, solar_panel_status bool,scientific_instruments_status, navigation_system_status string) {
+func updateCoordinates(speed float64, solar_panel_status,scientific_instruments_status, navigation_system_status string) {
 
 	var iterations = 10
 
@@ -97,14 +97,17 @@ func updateCoordinates(speed float64, solar_panel_status bool,scientific_instrum
 			newLatitude -= 90
 		}
 
-		// Обновляем последние координаты
-		lastLocation.Latitude = newLatitude
-		lastLocation.Longitude = newLongitude
-		lastLocation.Speed = speedBased
-		lastLocation.Altitude = newHeight
+		lastLocation.Latitude = roundFloat(newLatitude, 3)
+		lastLocation.Longitude = roundFloat(newLongitude, 3)
+		lastLocation.Speed = roundFloat(speedBased, 3)
+		lastLocation.Altitude = roundFloat(newHeight, 3)
 		lastLocation.SolarPanelStatus = solar_panel_status
 		lastLocation.ScientificInstrumentsStatus = scientific_instruments_status
 		lastLocation.NavigationSystemStatus = navigation_system_status
+		
+		lastLocation.FuelLevel = roundFloat(lastLocation.FuelLevel, 2) // Округляем топливо до 2 знаков после запятой
+		lastLocation.Temperature = roundFloat(lastLocation.Temperature, 2) // Округляем температуру до 2 знаков после запятой
+
 
 		// Записываем новые координаты в файл JSON
 		err := ds.WriteLocationToFile(lastLocation)

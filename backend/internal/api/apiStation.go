@@ -33,7 +33,7 @@ func (h *Handler) UpdateStationData(c *gin.Context) {
 	}
 
 	// Отправить POST-запрос на другой сервер (порт 8081) с данными из запроса
-	response, err := http.Post("http://localhost:8081/update", "application/json", bytes.NewBuffer(requestBody))
+	response, err := http.Post("http://localhost:8081/update-speed-data", "application/json", bytes.NewBuffer(requestBody))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send request to port 8081"})
 		return

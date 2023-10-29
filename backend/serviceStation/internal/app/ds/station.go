@@ -17,7 +17,7 @@ type Location struct {
 	PlanetRadius              int     `json:"planetRadius"`
 	Angle                     float64 `json:"angle"`
 	PlanetName                string  `json:"planetName"`
-	SolarPanelStatus          bool    `json:"solarPanelStatus"`
+	SolarPanelStatus          string  `json:"solarPanelStatus"`
 	FuelLevel                 float64 `json:"fuelLevel"`
 	HullStatus                string  `json:"hullStatus"`
 	Temperature               float64 `json:"temperature"`
