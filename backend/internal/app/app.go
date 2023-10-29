@@ -56,6 +56,18 @@ func New(ctx context.Context) (*Application, error) {
 func (app *Application) Run() {
     handler := api.NewHandler(app.Repository,app.Config, app.Redis)
     r := gin.Default()
+    // Разрешить запросы от любого источника
+	r.Use(func(c *gin.Context) {
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Origin, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(200)
+			return
+		}
+		c.Next()
+	})
    // Создаем группу роутов, к которой хотим применить мидлваре
     authGroup := r.Group("/auth")
     {
@@ -110,6 +122,7 @@ func (app *Application) Run() {
 
     r.GET("/data", handler.GetStationData)
     r.POST("/update",handler.UpdateStationData)
+    r.GET("/sector-image",handler.GetSectorImage)
     r.POST("/console",handler.ExecuteConsoleCommand)
     //r.PUT("/console/:command")
     addr := fmt.Sprintf("%s:%d", app.Config.ServiceHost, app.Config.ServicePort)

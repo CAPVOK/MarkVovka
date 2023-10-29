@@ -51,3 +51,35 @@ func (h *Handler) UpdateStationData(c *gin.Context) {
 	c.Data(http.StatusOK, "application/json", responseData)
 }
 
+func (h *Handler) GetSectorImage(c *gin.Context) {
+	// Отправить GET-запрос на другой сервер (порт 8081)
+	response, err := http.Get("http://localhost:8081/sector-image")
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"msg": "Failed to send GET request to port 8081"})
+		return
+	}
+	defer response.Body.Close()
+
+	// Прочитать ответ от другого сервера
+	responseData, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"msg": "Failed to read response from port 8081"})
+		return
+	}
+
+	// Отправить полученные данные обратно клиенту в виде JSON
+	var jsonResponse map[string]interface{}
+	if err := json.Unmarshal(responseData, &jsonResponse); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"msg": "Failed to parse JSON response"})
+		return
+	}
+
+	c.JSON(http.StatusOK, jsonResponse)
+}
+
+
+
+
+
+
+
