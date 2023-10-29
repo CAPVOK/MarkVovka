@@ -18,7 +18,7 @@ type Station struct {
 type SimulationParams struct {
 	Speed                     float64
 	Height                    float64
-	SolarPanelStatus          bool
+	SolarPanelStatus          string
 	ScientificInstrumentsStatus string
 	NavigationSystemStatus      string
 }
@@ -34,13 +34,13 @@ func StartSimulation() {
 		Altitude:                    300,
 		PlanetRadius:                6371,
 		Angle:                       0,
-		PlanetName:                  "Earth",
-		SolarPanelStatus:            true,
+		PlanetName:                  "Земля",
+		SolarPanelStatus:            "открыт",
 		FuelLevel:                   75.5,
-		HullStatus:                  "normal",
+		HullStatus:                  "нормально",
 		Temperature:                 25.5,
-		ScientificInstrumentsStatus: "active",
-		NavigationSystemStatus:      "enabled",
+		ScientificInstrumentsStatus: "активен",
+		NavigationSystemStatus:      "включена",
 	}
 
 	go func() {
@@ -64,7 +64,7 @@ func roundFloat(num float64, decimals int) float64 {
 
 
 // updateCoordinates обновляет координаты станции на основе переданных параметров.
-func updateCoordinates(speed float64, solar_panel_status bool,scientific_instruments_status, navigation_system_status string) {
+func updateCoordinates(speed float64, solar_panel_status,scientific_instruments_status, navigation_system_status string) {
 
 	var iterations = 10
 
@@ -104,7 +104,7 @@ func updateCoordinates(speed float64, solar_panel_status bool,scientific_instrum
 		lastLocation.SolarPanelStatus = solar_panel_status
 		lastLocation.ScientificInstrumentsStatus = scientific_instruments_status
 		lastLocation.NavigationSystemStatus = navigation_system_status
-
+		
 		lastLocation.FuelLevel = roundFloat(lastLocation.FuelLevel, 2) // Округляем топливо до 2 знаков после запятой
 		lastLocation.Temperature = roundFloat(lastLocation.Temperature, 2) // Округляем температуру до 2 знаков после запятой
 
