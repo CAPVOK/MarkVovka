@@ -36,11 +36,11 @@ func NewHandler(cfg *config.Config) *Handler {
 		PlanetRadius:                6371,
 		Angle:                       0,
 		PlanetName:                  "Земля",
-		SolarPanelStatus:            "true",
+		SolarPanelStatus:            "открты",
 		FuelLevel:                   75.5,
 		HullStatus:                  "нормально",
 		Temperature:                 25.5,
-		ScientificInstrumentsStatus: "активен",
+		ScientificInstrumentsStatus: "активны",
 		NavigationSystemStatus:      "включена",
 	}
 
@@ -109,9 +109,9 @@ func (h *Handler) ToggleSolarPanelsStatus(c *gin.Context) {
 	// Проверяем допустимые значения
 	switch status {
 	case "on":
-		solarPanelStatus = "открыто"
+		solarPanelStatus = "открыты"
 	case "off":
-		solarPanelStatus = "закрыто"
+		solarPanelStatus = "закрыты"
 	default:
 		c.JSON(http.StatusOK, gin.H{"message": "Invalid value for solarPanelStatus parameter"})
 		return
@@ -140,9 +140,9 @@ func (h *Handler) ToggleScientificInstrumentsStatus(c *gin.Context) {
 	// Проверяем допустимые значения
 	switch status {
 	case "active":
-		instrumentsStatus = "активен"
+		instrumentsStatus = "активны"
 	case "inactive":
-		instrumentsStatus = "не активный"
+		instrumentsStatus = "не активны"
 	case "maintenance":
 		instrumentsStatus = "требуют обслуживания"
 	default:

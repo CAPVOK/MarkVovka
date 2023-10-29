@@ -35,11 +35,11 @@ func StartSimulation() {
 		PlanetRadius:                6371,
 		Angle:                       0,
 		PlanetName:                  "Земля",
-		SolarPanelStatus:            "открыт",
+		SolarPanelStatus:            "открыто",
 		FuelLevel:                   75.5,
 		HullStatus:                  "нормально",
 		Temperature:                 25.5,
-		ScientificInstrumentsStatus: "активен",
+		ScientificInstrumentsStatus: "активны",
 		NavigationSystemStatus:      "включена",
 	}
 
