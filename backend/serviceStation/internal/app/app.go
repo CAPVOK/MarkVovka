@@ -41,7 +41,7 @@ func (app *Application) Run() {
     handler.StartSimulation()
     r := gin.Default()
     r.GET("/location", handler.Location)
-    r.POST("/update", handler.UpdateStationData)
+    r.POST("/update", handler.UpdateSpeedStation)
 
     r.PUT("/solar-panel-status", handler.ToggleSolarPanelsStatus)
     r.PUT("scientific-instruments-status", handler.ToggleScientificInstrumentsStatus)
@@ -52,6 +52,6 @@ func (app *Application) Run() {
     addr := fmt.Sprintf("%s:%d", app.Config.ServiceHost, app.Config.ServicePort)
     r.Run(addr)
     log.Println("Server down")
-    // wg.Wait()
+    
 
 }

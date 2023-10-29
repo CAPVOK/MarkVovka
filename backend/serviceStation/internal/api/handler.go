@@ -4,13 +4,13 @@ import (
 	"MarkVovka/backend/serviceStation/internal/app/config"
 	"MarkVovka/backend/serviceStation/internal/app/ds"
 	"MarkVovka/backend/serviceStation/internal/app/simulation"
-	"bytes"
 	"encoding/base64"
 	"fmt"
+	"io/ioutil"
 	"net/http"
+	"path/filepath"
 	"strconv"
 
-	"github.com/fogleman/gg"
 	"github.com/gin-gonic/gin"
 )
 
@@ -53,56 +53,56 @@ func NewHandler(cfg *config.Config) *Handler {
     }
 }
 
-func (h *Handler) UpdateStationData(c *gin.Context) {
-	var requestData struct {
-		Speed    float64 `json:"speed"`
-	}
+func (h *Handler) UpdateSpeedStation(c *gin.Context) {
+	// Получить значение параметра "speed" из query parameters
+	speedStr := c.Query("speed")
 
-	if err := c.ShouldBindJSON(&requestData); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON data"})
+	// Преобразовать значение параметра в float64
+	speed, err := strconv.ParseFloat(speedStr, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"msg": "Invalid speed parameter"})
 		return
 	}
 
 	// Проверить непустые поля в requestData и обновить соответствующие поля в locationData
-	if requestData.Speed != 0 {
-		h.LocationData.Speed = requestData.Speed
+	if speed != 0 {
+		h.LocationData.Speed = speed
 	}
 
-	// Создать копию обновленных данных
 	// Создать копию обновленных данных
 	updatedData := &ds.Location{
 		Latitude:                    h.StationData.Latitude,
 		Longitude:                   h.StationData.Longitude,
-		Speed:                       requestData.Speed,
+		Speed:                       speed,
 		Altitude:                    h.LocationData.Altitude,
 		PlanetRadius:                h.LocationData.PlanetRadius,
 		Angle:                       h.LocationData.Angle,
 		PlanetName:                  h.LocationData.PlanetName,
-		SolarPanelStatus:            h.LocationData.SolarPanelStatus,  
-		FuelLevel:                   h.LocationData.FuelLevel,  
-		HullStatus:                  h.LocationData.HullStatus,  
-		Temperature:                 h.LocationData.Temperature,  
-		ScientificInstrumentsStatus: h.LocationData.ScientificInstrumentsStatus,  
-		NavigationSystemStatus:      h.LocationData.NavigationSystemStatus,  
+		SolarPanelStatus:            h.LocationData.SolarPanelStatus,
+		FuelLevel:                   h.LocationData.FuelLevel,
+		HullStatus:                  h.LocationData.HullStatus,
+		Temperature:                 h.LocationData.Temperature,
+		ScientificInstrumentsStatus: h.LocationData.ScientificInstrumentsStatus,
+		NavigationSystemStatus:      h.LocationData.NavigationSystemStatus,
 	}
-
 
 	// Отправить обновленные данные в горутину для асинхронного обновления координат
 	go func() {
 		simulation.ParamsCh <- simulation.SimulationParams{
-			Speed:  requestData.Speed,
+			Speed: speed,
 		}
 	}()
 
 	// Отправить обновленные данные в виде JSON
-	c.JSON(http.StatusOK, gin.H{"message": "Station data updated successfully", "updatedData": updatedData})
+	c.JSON(http.StatusOK, gin.H{"msg": "Station data updated successfully", "log": updatedData})
 }
+
 
 func (h *Handler) ToggleSolarPanelsStatus(c *gin.Context) {
 	// Парсим параметр activated из запроса
 	activated, err := strconv.ParseBool(c.DefaultQuery("solarPanelStatus", "false"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid value for activated parameter"})
+		c.JSON(http.StatusBadRequest, gin.H{"msg": "Invalid value for activated parameter"})
 		return
 	}
 
@@ -117,7 +117,7 @@ func (h *Handler) ToggleSolarPanelsStatus(c *gin.Context) {
 		}
 	}(activated)
 
-	c.JSON(http.StatusOK, gin.H{"message": "Solar panels status updated successfully", "data": h.LocationData})
+	c.JSON(http.StatusOK, gin.H{"msg": "Solar panels status updated successfully", "log": h.LocationData})
 }
 
 func (h *Handler) ToggleScientificInstrumentsStatus(c *gin.Context) {
@@ -139,9 +139,9 @@ func (h *Handler) ToggleScientificInstrumentsStatus(c *gin.Context) {
 			}
 		}(status)
 
-		c.JSON(http.StatusOK, gin.H{"message": "Scientific instruments status updated successfully", "data": h.LocationData})
+		c.JSON(http.StatusOK, gin.H{"msg": "Scientific instruments status updated successfully", "log": h.LocationData})
 	default:
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid value for scientificInstrumentsStatus parameter"})
+		c.JSON(http.StatusBadRequest, gin.H{"msg": "Invalid value for scientificInstrumentsStatus parameter"})
 	}
 }
 
@@ -182,34 +182,25 @@ func (h *Handler) GetSectorImageByLongitude(c *gin.Context) {
 		return
 	}
 
-	// Создать новое изображение
-	const imageSize = 200 // Размер изображения (ширина и высота)
-	dc := gg.NewContext(imageSize, imageSize)
+	// Путь к папке, содержащей изображения секторов
+	imageFolderPath := "../resources/data"
 
-	// Рисовать изображение сектора (просто для примера)
-	dc.SetRGB(0, float64(sector)/float64(sectorCount), 0)
-	dc.DrawRectangle(50, 50, 100, 100)
-	dc.Fill()
+	// Формирование пути к изображению сектора
+	imageFileName := fmt.Sprintf("%d.png", sector)
+	imageFilePath := filepath.Join(imageFolderPath, imageFileName)
 
-	// Сохранить изображение в формате PNG
-	imagePath := fmt.Sprintf("/sector%d.png", sector) // Укажите путь, куда сохранить изображение
-	if err := dc.SavePNG(imagePath); err != nil {
-		return 
-	}
-
-
-	// Создать буфер для сохранения изображения
-	var buf bytes.Buffer
-	if err := dc.EncodePNG(&buf); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to encode image"})
+	// Чтение изображения из файла
+	imageData, err := ioutil.ReadFile(imageFilePath)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to read image"})
 		return
 	}
 
-	// Кодировать изображение в Base64
-	encodedImage := base64.StdEncoding.EncodeToString(buf.Bytes())
+	// Кодирование изображения в Base64
+	encodedImage := base64.StdEncoding.EncodeToString(imageData)
 
 	// Отправить изображение в JSON ответе
-	c.JSON(http.StatusOK, gin.H{"image": encodedImage})
+	c.JSON(http.StatusOK, gin.H{"log": encodedImage, "msg":"OKEY"})
 }
 
 
