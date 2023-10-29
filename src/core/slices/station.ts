@@ -13,14 +13,14 @@ export interface IStation {
 }
 
 const initialState: IStation = {
-  latitude:  0,
+  latitude: 0,
   longitude: 0,
   speed: 0,
   altitude: 0,
   planetRadius: 0,
   angle: 0,
   planetName: "",
-  status: ""
+  status: "",
 };
 
 const slice = createSlice({
@@ -36,24 +36,12 @@ const slice = createSlice({
       state.angle = action.payload.angle;
       state.status = action.payload.status;
       console.log(action.payload);
-    }
-    /* logInUser: (state, action: PayloadAction<string>) => {
-      state.isUserLogIn = true
-      state.userName = action.payload
     },
-    logOutUser: (state) => {
-      state.isUserLogIn = false
-      state.userName = ""
-    }, */
   },
 });
 
-// eslint-disable-next-line no-empty-pattern
-export const {
-  updateInfo
-} = slice.actions;
+export const { updateInfo } = slice.actions;
 
-export const selectStationInfo = (state: RootState) =>
-  state.station;
+export const selectStationInfo = (state: RootState) => state.station;
 
 export const { reducer } = slice;

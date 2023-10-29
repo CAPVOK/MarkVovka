@@ -175,8 +175,8 @@ $sidebar_block_height: 50px;
         }
       }
       @for $i from 1 through 8 {
-        &:nth-child(#{$i}):hover,
-        &:nth-child(#{$i}):focus {
+        &:nth-child(#{$i}):hover/* ,
+        &:nth-child(#{$i}):focus  */ {
           p {
             left: 15px;
           }
@@ -184,10 +184,11 @@ $sidebar_block_height: 50px;
         &:nth-child(#{$i}):hover ~ .highlight {
           top: calc($sidebar_block_height * ($i - 1));
         }
-        &:nth-child(#{$i}):focus ~ .highlight {
+        /* &:nth-child(#{$i}):focus ~ .highlight {
           top: calc($sidebar_block_height * ($i - 1));
-        }
+        } */
       }
+
       p {
         position: absolute;
         left: $sidebar_padding;

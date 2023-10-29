@@ -4,7 +4,8 @@ import { store } from "..";
 import { setSocketConnection } from "../slices/common";
 import { IStation, updateInfo } from "../slices/station";
 
-export const BASE_URL = "ws://localhost:8080/data";
+export const BASE_URL = "http://localhost:8080";
+const Socket_URL = "ws://localhost:8080/data";
 
 const initialization = (socket: WebSocket) => {
   socket.addEventListener("open", () => {
@@ -23,7 +24,7 @@ const initialization = (socket: WebSocket) => {
   });
 };
 
-const socket = new WebSocket(BASE_URL);
+const socket = new WebSocket(Socket_URL);
 
 initialization(socket);
 
