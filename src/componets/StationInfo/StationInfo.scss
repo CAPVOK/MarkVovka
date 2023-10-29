@@ -4,6 +4,11 @@
   flex-direction: column;
   gap: 50px;
 
+  h1 {
+    font-family: "Terminal";
+    color: var(--accent_color);
+  }
+
   .info_block {
     box-sizing: border-box;
     width: 100%;
