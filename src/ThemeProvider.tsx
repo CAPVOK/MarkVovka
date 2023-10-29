@@ -42,13 +42,13 @@ interface Theme {
 }
 
 const lightTheme: Theme = {
-  backgroundColor: "#fbfbfb",
-  backgroundLightColor: "",
-  primaryColor: "#6ebaeb",
-  secondaryColor: "#f49474",
-  borderColor: "",
-  accentColor: "#ec4c1c",
-  errorColor: "#f30f11",
+  backgroundColor: "#E0FFFF",
+  backgroundLightColor: "#000080",
+  primaryColor: "#191970",
+  secondaryColor: "#40E0D0",
+  borderColor: "#40E0D0",
+  accentColor: "#FF6347",
+  errorColor: "#FF6347",
   successColor: "#40ca6e",
   errorTextColor: "#fbfbfb",
   successTextColor: "#fbfbfb",
