@@ -65,7 +65,7 @@ export const SideBar: React.FC = () => {
             <p>{route.label}</p>
             <div className="icon">
               {route.icon &&
-                React.cloneElement(route.icon, { fill: location.pathname === route.path ? theme?.successColor : theme?.textColor })}
+                React.cloneElement(route.icon, { fill: theme?.textColor })}
             </div>
           </Link>
         ))}

@@ -1,1 +1,15 @@
-{"latitude":57.233,"longitude":30.456,"speed":7.685,"altitude":371.12,"planetRadius":6371,"angle":0,"planetName":"Earth","solarPanelStatus":true,"fuelLevel":75.5,"hullStatus":"normal","temperature":25.5,"scientificInstrumentsStatus":"active","navigationSystemStatus":"enabled"}
+{
+  "latitude": 57.233,
+  "longitude": 30.456,
+  "speed": 7.685,
+  "altitude": 371.12,
+  "planetRadius": 6371,
+  "angle": 0,
+  "planetName": "Earth",
+  "solarPanelStatus": true,
+  "fuelLevel": 75.5,
+  "hullStatus": "normal",
+  "temperature": 25.5,
+  "scientificInstrumentsStatus": "active",
+  "navigationSystemStatus": "enabled"
+}

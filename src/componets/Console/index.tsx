@@ -1,12 +1,19 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useEffect, useRef, useState } from "react";
 import "./Console.scss";
-import { useSelector } from "../../core";
+import { useDispatch, useSelector } from "../../core";
 import { ChangeEvent } from "../../App.typig";
-import { selectConsoleMessages } from "../../core/slices/console";
+import {
+  selectConsoleMessages,
+  updateMessages,
+} from "../../core/slices/console";
 
 import { CloseIcon, TopArrowIcon } from "../icons";
 import { useTheme } from "../../ThemeProvider";
+import {
+  IConsoleResponse,
+  useSendConsoleCommandMutation,
+} from "../../core/api/stationApi";
 
 export const Console: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -16,9 +23,36 @@ export const Console: React.FC = () => {
   const consoleRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const dispatch = useDispatch();
   const messages = useSelector(selectConsoleMessages);
 
+  const [sendCommand] = useSendConsoleCommandMutation();
+
+  const sendConsoleCommand = async (message: string) => {
+    try {
+      const response = await fetch("http://localhost:8080/console", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ message }),
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      const data: IConsoleResponse = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Error:", error);
+      throw error;
+    }
+  };
+
   const handleSendCommand = () => {
+    console.log(message);
+    sendConsoleCommand(message).then((data) => {
+      dispatch(updateMessages(data));
+    });
     setMessage("");
   };
 
@@ -31,8 +65,7 @@ export const Console: React.FC = () => {
     inputRef.current?.focus();
   };
 
-  const handleDocumentClick = (event: MouseEvent) => {
-    // Если клик произошел вне компонента, убираем фокус
+  const handleConsoleClick = (event: MouseEvent) => {
     if (
       !event.target ||
       !consoleRef.current ||
@@ -43,22 +76,29 @@ export const Console: React.FC = () => {
       inputRef.current?.focus();
     }
   };
-  const handleEnterPress = (event: KeyboardEvent) => {
+
+  /* const handleEnterPress = (event: KeyboardEvent) => {
     if (
       event.key === "Enter" &&
       event.target &&
       consoleRef.current &&
       consoleRef.current.contains(event.target as Node)
     ) {
-      handleSendCommand()
+      handleSendCommand();
+    }
+  }; */
+  const handleEnterPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      handleSendCommand();
     }
   };
   useEffect(() => {
-    document.addEventListener("click", handleDocumentClick);
-    document.addEventListener("keydown", handleEnterPress); // Добавляем обработчик для клавиши Enter
+    document.addEventListener("click", handleConsoleClick);
+    /* document.addEventListener("keydown", handleEnterPress); */
     return () => {
-      document.removeEventListener("click", handleDocumentClick);
-      document.removeEventListener("keydown", handleEnterPress); // Убираем обработчик при размонтировании компонента
+      document.removeEventListener("click", handleConsoleClick);
+      /* document.removeEventListener("keydown", handleEnterPress); */
     };
   }, []);
 
@@ -74,11 +114,6 @@ export const Console: React.FC = () => {
       <div className="header">
         <h2>Консоль</h2>
         <div className="manage_buttons">
-          <button className="btn">
-            <div className="icon close">
-              <CloseIcon fill={theme?.textColor} />
-            </div>
-          </button>
           <button className="btn" onClick={handleConsoleArrowClick}>
             <div className={isOpen ? "icon reverse" : "icon"}>
               <TopArrowIcon fill={theme?.textColor} />
@@ -106,7 +141,8 @@ export const Console: React.FC = () => {
             type="text"
             value={message}
             onChange={handleInputChange}
-            className="console_message console_input"
+            onKeyDown={handleEnterPress}
+            className="console_input"
           />
           <i></i>
         </div>

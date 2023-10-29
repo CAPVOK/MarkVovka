@@ -7,24 +7,35 @@ export interface IStationData {
   angle: number;
 }
 
-export const authApi = createApi({
-  reducerPath: "userAPI",
+export interface IConsoleResponse {
+  log: string;
+  msg: string;
+}
+
+export const stationApi = createApi({
+  reducerPath: "stationAPI",
   baseQuery: fetchBaseQuery({
     baseUrl: BASE_URL,
     credentials: "same-origin",
     mode: "no-cors",
   }),
-  tagTypes: ["Station"],
   endpoints: (build) => ({
     updateStationData: build.mutation<unknown, IStationData>({
       query: (body) => ({
         url: "/update",
         method: "POST",
-        body
+        body,
       }),
-      invalidatesTags: [{ type: "Station" }],
+    }),
+    sendConsoleCommand: build.mutation<IConsoleResponse, string>({
+      query: (body) => ({
+        url: "/console",
+        method: "POST",
+        body: { message: body },
+      }),
     }),
   }),
 });
 
-export const { useUpdateStationDataMutation } = authApi;
+export const { useUpdateStationDataMutation, useSendConsoleCommandMutation } =
+  stationApi;
