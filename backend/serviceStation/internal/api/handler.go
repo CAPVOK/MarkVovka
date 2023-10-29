@@ -66,7 +66,10 @@ func (h *Handler) UpdateSpeedStation(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"msg": "Invalid speed parameter"})
 		return
 	}
-
+	if(speed>7.85 || speed < 7){
+		c.JSON(http.StatusOK, gin.H{"msg": "Invalid speed parameter"})
+		return
+	}
 	// Проверить непустые поля в requestData и обновить соответствующие поля в locationData
 	if speed != 0 {
 		h.LocationData.Speed = speed

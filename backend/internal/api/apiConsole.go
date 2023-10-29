@@ -3,6 +3,7 @@ package api
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -43,6 +44,7 @@ func (h *Handler) ExecuteConsoleCommand(c *gin.Context) {
 	if len(parts) == 2 {
 		value = parts[1]
 	}
+	
 
 	// Проверяем, существует ли команда
 	if !isValidCommand(command) {
@@ -74,6 +76,15 @@ func (h *Handler) ExecuteConsoleCommand(c *gin.Context) {
 	case "navigation-system-status":
 		url = "http://localhost:8081/navigation-system-status?navigationSystemStatus=" + value
 	case "speed":
+		speed,err := strconv.ParseFloat(value, 64)
+		if err != nil {
+			c.JSON(http.StatusOK, gin.H{"msg": "Invalid speed parameter", "log":logMessage})
+			return
+		}
+		if(speed>7.85 || speed < 7){
+			c.JSON(http.StatusOK, gin.H{"msg": "Invalid speed parameter", "log":logMessage})
+			return
+		}
 		url = "http://localhost:8081/update-station-speed?speed=" + value
 	}
 
