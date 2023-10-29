@@ -41,8 +41,9 @@ func (app *Application) Run() {
     handler.StartSimulation()
     r := gin.Default()
     r.GET("/location", handler.Location)
-    r.POST("/update", handler.UpdateSpeedStation)
 
+
+    r.PUT("/update-station-speed", handler.UpdateSpeedStation)
     r.PUT("/solar-panel-status", handler.ToggleSolarPanelsStatus)
     r.PUT("scientific-instruments-status", handler.ToggleScientificInstrumentsStatus)
     r.PUT("navigation-system-status", handler.ToggleNavigationSystemStatus)

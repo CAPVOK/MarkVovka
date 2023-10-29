@@ -11,7 +11,7 @@ import (
 func isValidCommand(command string) bool {
 	// Здесь можно проверить, существует ли команда в вашем списке допустимых команд
 	// Вернуть true, если команда допустима, и false в противном случае
-	return command == "solar-panel-status" || command == "scientific-instruments-status" || command == "navigation-system-status" || command == "help"
+	return command == "solar-panel-status" || command == "scientific-instruments-status" || command == "navigation-system-status" || command == "help" || command == "speed"
 }
 
 func (h *Handler) ExecuteConsoleCommand(c *gin.Context) {
@@ -73,6 +73,8 @@ func (h *Handler) ExecuteConsoleCommand(c *gin.Context) {
 		url = "http://localhost:8081/scientific-instruments-status?scientificInstrumentsStatus=" + value
 	case "navigation-system-status":
 		url = "http://localhost:8081/navigation-system-status?navigationSystemStatus=" + value
+	case "speed":
+		url = "http://localhost:8081/update-station-speed?speed=" + value
 	}
 
 	// Создаем PUT запрос
