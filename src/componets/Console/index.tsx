@@ -133,6 +133,7 @@ export const Console: React.FC = () => {
           <input
             ref={inputRef}
             id="console_input"
+            placeholder="$"
             type="text"
             value={message}
             onChange={handleInputChange}

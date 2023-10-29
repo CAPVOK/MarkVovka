@@ -29,7 +29,7 @@ var lastLocation *ds.Location
 func StartSimulation() {
 	lastLocation = &ds.Location{
 		Latitude:                    0,
-		Longitude:                   0,
+		Longitude:                   53,
 		Speed:                       7.685,
 		Altitude:                    300,
 		PlanetRadius:                6371,

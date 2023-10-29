@@ -29,8 +29,8 @@ func (h *Handler) StartSimulation() {
 }
 func NewHandler(cfg *config.Config) *Handler {
 	locationData := &ds.Location{
-		Latitude:                    50.123,
-		Longitude:                   0,
+		Latitude:                    0,
+		Longitude:                   -150,
 		Speed:                       7.685,
 		Altitude:                    300,
 		PlanetRadius:                6371,
@@ -200,9 +200,15 @@ func (h *Handler) ToggleNavigationSystemStatus(c *gin.Context) {
 }
 
 func (h *Handler) GetSectorImageByLongitude(c *gin.Context) {
+	// Чтение данных о местоположении из файла JSON
+  locationData, err := ds.ReadLocationFromFile()
+  if err != nil {
+    c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to read location data from file"})
+    return
+  }
 	// Определить сектор на основе долготы из LocationData
 	sectorCount := 20
-	sector := int((h.LocationData.Latitude + 180.0) / 360.0 * float64(sectorCount))
+	sector := int((locationData.Longitude) / 360.0 * float64(sectorCount))
 
 	// Проверить, что сектор находится в допустимых пределах (0-19)
 	if sector < 0 || sector >= sectorCount {
@@ -232,7 +238,7 @@ func (h *Handler) GetSectorImageByLongitude(c *gin.Context) {
 	}
 
 	// Определение коэффициента масштабирования на основе значения Longitude
-	scaleFactor := 1.0 + math.Abs(h.LocationData.Altitude/1000.0) // Примерный расчет коэффициента масштабирования
+	scaleFactor := 1.0 + math.Abs(locationData.Altitude/1000.0) // Примерный расчет коэффициента масштабирования
 
 	// Масштабирование изображения
 	scaledImg := imaging.Resize(img, int(float64(img.Bounds().Dx())*scaleFactor), int(float64(img.Bounds().Dy())*scaleFactor), imaging.Lanczos)
