@@ -1,7 +1,7 @@
 import { Middleware } from "@reduxjs/toolkit";
 import "regenerator-runtime/runtime";
 import { store } from "..";
-import { setSocketConnection } from "../slices/common";
+import { setSocketConnection } from "../slices/connection";
 import { IStation, updateInfo } from "../slices/station";
 
 export const BASE_URL = "http://localhost:8080";

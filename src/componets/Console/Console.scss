@@ -3,15 +3,17 @@
   bottom: 0;
   left: 0;
   right: 0;
+  z-index: 10;
   .header {
     display: flex;
     justify-content: space-between;
+    border-top: 2px solid var(--border_color);
     align-items: center;
-    height: 40px;
-    background-color: var(--background_light_color);
+    height: 50px;
+    background-color: var(--background_color);
     padding: 5px 10px;
     h2 {
-      font-size: 12px;
+      font-size: 14px;
     }
     .manage_buttons {
       display: flex;
@@ -48,15 +50,19 @@
   .main_block {
     height: 280px;
     box-sizing: border-box;
-    background-color: #1c1c1c;
+    background-color: var(--background_color);
+    border-top: 2px solid var(--border_color);
     overflow: scroll;
     padding-bottom: 220px;
     transition: 0.3s;
+    padding-top: 10px;
+    padding-inline: 5px;
     &_close {
       height: 0;
       transition: 0.3s;
     }
     .console_message {
+      position: relative;
       padding: 5px;
       .log {
         display: inline;
@@ -72,11 +78,23 @@
       }
     }
     .console_input {
+      padding: 5px;
+      position: relative;
       width: 100%;
       background-color: transparent;
       font-size: 12px;
       font-family: "Terminal";
       color: var(--success_color);
+
+      &::before {
+        position: absolute;
+        content: "";
+        width: 5px;
+        height: 10px;
+        left: 0;
+        top: 0;
+        background-color: var(--success_color);
+      }
     }
   }
 }

@@ -1,37 +1,21 @@
 import React from "react";
 import "./ControlPage.scss";
-import { useUpdateDataMutation } from "../../core/api/authApi";
+/* import { useUpdateStationDataMutation } from "../../core/api/stationApi"; */
 
 import { Console, StationInfo } from "../../componets";
+import { RotatingPlanet } from "../../componets/RotatingPlanet";
 
 export const ControlPage: React.FC = () => {
-  const [updateData] = useUpdateDataMutation();
+  /* const [updateData] = useUpdateStationDataMutation(); */
 
   return (
     <div className="control_page">
-      <StationInfo />
-      <button
-        onClick={() =>
-          updateData({
-            speed: 400,
-            altitude: 0,
-            angle: 0,
-          })
-        }
-      >
-        скорость 400
-      </button>
-      <button
-        onClick={() =>
-          updateData({
-            speed: 40,
-            altitude: 0,
-            angle: 0,
-          })
-        }
-      >
-        скорость 40
-      </button>
+      <div className="wrapper">
+        <StationInfo />
+        <div className="right_block">
+          <RotatingPlanet/>
+        </div>
+      </div>
       <Console />
     </div>
   );

@@ -13,14 +13,8 @@ export interface ILogInInfo {
   password: string;
 }
 
-export interface IUpdateData {
-  speed: number;
-  altitude: number;
-  angle: number;
-}
-
 export const authApi = createApi({
-  reducerPath: "userAPI",
+  reducerPath: "authAPI",
   baseQuery: fetchBaseQuery({
     baseUrl: BASE_URL,
     credentials: "same-origin",
@@ -36,14 +30,6 @@ export const authApi = createApi({
           username: body.userName,
           password: body.password,
         },
-      }),
-      invalidatesTags: [{ type: "Authorization" }],
-    }),
-    updateData: build.mutation<unknown, IUpdateData>({
-      query: (body) => ({
-        url: "/update",
-        method: "POST",
-        body
       }),
       invalidatesTags: [{ type: "Authorization" }],
     }),
@@ -63,4 +49,4 @@ export const authApi = createApi({
   }),
 });
 
-export const { useSignUpMutation, useLogInMutation, useUpdateDataMutation } = authApi;
+export const { useSignUpMutation, useLogInMutation } = authApi;

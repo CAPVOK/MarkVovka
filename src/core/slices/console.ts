@@ -1,12 +1,16 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { RootState } from "..";
 
-export interface IConsoleMessages {
-  messages: { log: string; msg: string }[];
+export interface IConsoleMessage {
+  log: string;
+  msg: string;
+}
+export interface IConsole {
+  messages: IConsoleMessage[];
 }
 
-const initialState: IConsoleMessages = {
-  messages: [
+const initialState: IConsole = {
+  /* messages: [
     {
       log: "[ИНФО] 02.11.2023 12:00:",
       msg: "Инициализация систем. Подготовка к запуску.",
@@ -59,28 +63,25 @@ const initialState: IConsoleMessages = {
       log: "[ИНФО] 02.11.2023 13:00:",
       msg: "Связь с земным контролем установлена. Передача собранных данных.",
     },
-  ],
+  ], */
+  messages: [],
 };
 
 const slice = createSlice({
   name: "consoleSlice",
   initialState,
   reducers: {
-    /* logInUser: (state, action: PayloadAction<string>) => {
-      state.isUserLogIn = true
-      state.userName = action.payload
+    updateMessages: (state, action: PayloadAction<IConsoleMessage>) => {
+      state.messages.push({
+        log: action.payload.log || "",
+        msg: action.payload.msg || "",
+      });
     },
-    logOutUser: (state) => {
-      state.isUserLogIn = false
-      state.userName = ""
-    }, */
   },
 });
 
 // eslint-disable-next-line no-empty-pattern
-export const {
-  /* logInUser, logOutUser */
-} = slice.actions;
+export const { updateMessages } = slice.actions;
 
 export const selectConsoleMessages = (state: RootState) =>
   state.console.messages;

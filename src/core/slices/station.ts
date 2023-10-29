@@ -9,7 +9,12 @@ export interface IStation {
   planetRadius: number;
   angle: number;
   planetName: string;
-  status: string;
+  solarPanelStatus: string;
+  scientificInstrumentsStatus: string;
+  navigationSystemStatus: string;
+  temperature: number;
+  hullStatus: string;
+  fuelLevel: number;
 }
 
 const initialState: IStation = {
@@ -20,7 +25,12 @@ const initialState: IStation = {
   planetRadius: 0,
   angle: 0,
   planetName: "",
-  status: "",
+  scientificInstrumentsStatus: "",
+  navigationSystemStatus: "",
+  solarPanelStatus: "",
+  temperature: 0,
+  hullStatus: "",
+  fuelLevel: 0,
 };
 
 const slice = createSlice({
@@ -28,14 +38,19 @@ const slice = createSlice({
   initialState,
   reducers: {
     updateInfo: (state, action: PayloadAction<IStation>) => {
-      state.latitude = action.payload.latitude;
-      state.longitude = action.payload.longitude;
-      state.speed = action.payload.speed;
-      state.altitude = action.payload.altitude;
-      state.planetName = action.payload.planetName;
-      state.angle = action.payload.angle;
-      state.status = action.payload.status;
-      console.log(action.payload);
+      state.latitude = action.payload.latitude || 0;
+      state.longitude = action.payload.longitude || 0;
+      state.speed = action.payload.speed || 0;
+      state.altitude = action.payload.altitude || 0;
+      state.planetName = action.payload.planetName || "";
+      state.angle = action.payload.angle || 0;
+      state.solarPanelStatus = action.payload.solarPanelStatus || "";
+      state.planetName = action.payload.planetName || "";
+      state.scientificInstrumentsStatus = action.payload.scientificInstrumentsStatus || "";
+      state.navigationSystemStatus = action.payload.navigationSystemStatus || "";
+      state.hullStatus = action.payload.hullStatus || "";
+      state.temperature = action.payload.temperature || 0;
+      state.fuelLevel = action.payload.fuelLevel || 0;
     },
   },
 });
