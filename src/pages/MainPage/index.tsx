@@ -48,6 +48,7 @@ export const MainPage: React.FC = () => {
       <div className="photo_block">
         <div className="header">
           <h1>Россия-1</h1>
+          <p>Россия-1: Вместе в космическом полете будущего!</p>
         </div>
         <Photo />
         <div className="info_block">
